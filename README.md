@@ -4,4 +4,3 @@
 * Aleksandar Raynov
 * Bastian Walter
 * Riku Tuisku
-* Yingyu Mattila 
