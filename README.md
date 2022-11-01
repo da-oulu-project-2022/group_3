@@ -1,2 +1,6 @@
 # group_3
-I have edited the readme
+
+### Group members: 
+* Aleksandar Raynov
+* Bastian Walter
+* Riku Tuisku
