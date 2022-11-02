@@ -5,11 +5,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 class UserVM: ViewModel() {
     var userEmail = mutableStateOf("")
     var userName = mutableStateOf("")
     var user = mutableStateOf<FirebaseUser?>(null)
+
+    var userData = UserDataClass()
 
     fun setUser( userAuth: FirebaseUser? ) {
         user.value = userAuth
@@ -31,5 +35,23 @@ class UserVM: ViewModel() {
     fun signOut( auth: FirebaseAuth ){
         auth.signOut()
         user.value = null
+    }
+
+    fun fetchUserData() {
+        Firebase.firestore
+            .collection("users")
+            .document(userEmail.value)
+            .get()
+            .addOnSuccessListener { fetchedData ->
+                Log.d("data", fetchedData.toString())
+                val tempUserData = UserDataClass(
+                    username = fetchedData.get("username") as String,
+                    email = userEmail.value,
+                    weight = fetchedData.get("weight") as Number,
+                    height = fetchedData.get("height") as Number,
+                    age = fetchedData.get("age") as Number
+                )
+                userData = tempUserData
+            }
     }
 }

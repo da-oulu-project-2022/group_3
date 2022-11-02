@@ -15,6 +15,7 @@ fun StartPoint(){
     if( user != null ){
         userVM.setUser( user )
         userVM.setEmail( user.email.toString() )
+        userVM.fetchUserData()
     }
     
     if( userVM.user.value == null ){

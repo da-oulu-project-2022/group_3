@@ -16,6 +16,9 @@ fun LoginRegister( userVM: UserVM, auth: FirebaseAuth ){
 
     var email by remember { mutableStateOf("")}
     var password by remember { mutableStateOf("")}
+    var repeatPassword by remember { mutableStateOf("")}
+    var username by remember { mutableStateOf("")}
+    var registerSwitch by remember { mutableStateOf(false)}
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -27,18 +30,60 @@ fun LoginRegister( userVM: UserVM, auth: FirebaseAuth ){
             singleLine = true
         )
 
-        OutlinedTextField(
-            value = password,
-            label = { Text( text = "password")},
-            onValueChange = { password = it },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Password)
-        )
-
-        OutlinedButton(
-            onClick = { login(email, password, userVM, auth)}
-        ){
-            Text( text = "Login")
+        if(registerSwitch){
+            OutlinedTextField(
+                value = username,
+                onValueChange = { username = it},
+                label = { Text(text = "username")},
+                singleLine = true
+            )
+            OutlinedTextField(
+                value = password,
+                label = { Text( text = "password")},
+                onValueChange = { password = it },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Password)
+            )
+            OutlinedTextField(
+                value = repeatPassword,
+                label = { Text( text = "repeat password")},
+                onValueChange = { repeatPassword = it },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Password)
+            )
+        } else {
+            OutlinedTextField(
+                value = password,
+                label = { Text( text = "password")},
+                onValueChange = { password = it },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Password)
+            )
         }
+
+        if(!registerSwitch){
+            OutlinedButton(
+                onClick = { login(email, password, userVM, auth) }
+            ){
+                Text( text = "Login")
+            }
+            OutlinedButton(
+                onClick = { registerSwitch = !registerSwitch }
+            ){
+                Text( text = "New user")
+            }
+        } else {
+            OutlinedButton(
+                onClick = { register(email, password, username, userVM, auth) }
+            ){
+                Text( text = "Register")
+            }
+            OutlinedButton(
+                onClick = { registerSwitch = !registerSwitch }
+            ){
+                Text( text = "Registered? Sign in")
+            }
+        }
+
     }
 }
