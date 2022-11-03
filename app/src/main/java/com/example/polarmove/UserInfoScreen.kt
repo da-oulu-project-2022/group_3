@@ -10,7 +10,7 @@ import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun UserInfo(navControl: NavController, userVM: UserVM, auth: FirebaseAuth){
+fun UserInfo( navControl: NavController, userVM: UserVM ){
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -20,8 +20,9 @@ fun UserInfo(navControl: NavController, userVM: UserVM, auth: FirebaseAuth){
         Text(text = "height: ${userVM.userData.height}")
         Text(text = "age: ${userVM.userData.age}")
 
-        OutlinedButton(onClick = { navControl.navigate("GameScreen") }) {
-            Text(text = "MainScreen")
+        OutlinedButton(onClick = { navControl.navigate("MainScreen") }) {
+            Text(text = "Main screen")
         }
     }
+
 }

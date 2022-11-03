@@ -12,6 +12,8 @@ import com.google.firebase.auth.FirebaseUser
 fun StartPoint(){
 
     val userVM: UserVM = viewModel()
+    val gameVM: GameVM = viewModel()
+
     val auth = FirebaseAuth.getInstance()
     val user: FirebaseUser? = auth.currentUser
 
@@ -19,6 +21,7 @@ fun StartPoint(){
         userVM.setUser( user )
         userVM.setEmail( user.email.toString() )
         userVM.fetchUserData()
+        gameVM.getOwnGames( user.email.toString() )
     }
     
     if( userVM.user.value == null ){
@@ -30,19 +33,19 @@ fun StartPoint(){
                 MainScreen( navControl, userVM, auth )
             }
             composable( route = "GameScreen"){
-                GameScreen(navControl, userVM, auth )
+                GameScreen(navControl, userVM )
             }
             composable( route = "UserInfo"){
-                UserInfo( navControl, userVM, auth )
+                UserInfo( navControl, userVM )
             }
             composable( route = "HighScores"){
-                HighScores( navControl, userVM, auth )
+                HighScores( navControl, userVM, gameVM )
             }
             composable( route = "GameHistory"){
-                GameHistory( navControl, userVM, auth )
+                GameHistory( navControl, userVM, gameVM )
             }
             composable( route = "AboutUs"){
-                AboutUs( navControl, userVM, auth )
+                AboutUs( navControl, userVM )
             }
         }
     }

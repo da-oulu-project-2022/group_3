@@ -10,25 +10,14 @@ import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun HighScores(navControl: NavController, userVM: UserVM, auth: FirebaseAuth){
-
-    var switch by remember { mutableStateOf(false) }
+fun HighScores( navControl: NavController, userVM: UserVM, gameVM: GameVM ){
 
     Column(
         modifier = Modifier.fillMaxSize()
     ){
-        Text(text = "Logged In as: ${userVM.userEmail.value}")
-        OutlinedButton(onClick = {userVM.signOut( auth )}) {
-            Text(text = "Sign out")
-        }
-        OutlinedButton(onClick = { switch = !switch }) {
-            Text(text = "Show user data")
-        }
-        if(switch) {
-            Text(text = "username: ${userVM.userData.username}")
-            Text(text = "weight: ${userVM.userData.weight}")
-            Text(text = "height: ${userVM.userData.height}")
-            Text(text = "age: ${userVM.userData.age}")
+        OutlinedButton(onClick = { navControl.navigate("MainScreen") }) {
+            Text(text = "Main screen")
         }
     }
+
 }

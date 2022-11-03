@@ -9,6 +9,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -42,6 +43,7 @@ fun LoginRegister( userVM: UserVM, auth: FirebaseAuth ){
                 label = { Text( text = "password")},
                 onValueChange = { password = it },
                 singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Password)
             )
             OutlinedTextField(
@@ -49,6 +51,7 @@ fun LoginRegister( userVM: UserVM, auth: FirebaseAuth ){
                 label = { Text( text = "repeat password")},
                 onValueChange = { repeatPassword = it },
                 singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Password)
             )
         } else {
@@ -57,6 +60,7 @@ fun LoginRegister( userVM: UserVM, auth: FirebaseAuth ){
                 label = { Text( text = "password")},
                 onValueChange = { password = it },
                 singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Password)
             )
         }

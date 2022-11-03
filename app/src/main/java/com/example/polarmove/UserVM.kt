@@ -43,7 +43,6 @@ class UserVM: ViewModel() {
             .document(userEmail.value)
             .get()
             .addOnSuccessListener { fetchedData ->
-                Log.d("data", fetchedData.toString())
                 val tempUserData = UserDataClass(
                     username = fetchedData.get("username") as String,
                     email = userEmail.value,

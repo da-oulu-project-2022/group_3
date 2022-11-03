@@ -7,28 +7,26 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun GameHistory(navControl: NavController, userVM: UserVM, auth: FirebaseAuth){
+fun GameHistory( navControl: NavController, userVM: UserVM, gameVM: GameVM ){
 
-    var switch by remember { mutableStateOf(false) }
+    val ownGames = gameVM.ownGames.value
 
     Column(
         modifier = Modifier.fillMaxSize()
     ){
-        Text(text = "Logged In as: ${userVM.userEmail.value}")
-        OutlinedButton(onClick = {userVM.signOut( auth )}) {
-            Text(text = "Sign out")
+        OutlinedButton(onClick = { navControl.navigate("MainScreen") }) {
+            Text(text = "Main screen")
         }
-        OutlinedButton(onClick = { switch = !switch }) {
-            Text(text = "Show user data")
-        }
-        if(switch) {
-            Text(text = "username: ${userVM.userData.username}")
-            Text(text = "weight: ${userVM.userData.weight}")
-            Text(text = "height: ${userVM.userData.height}")
-            Text(text = "age: ${userVM.userData.age}")
+        if( ownGames.isEmpty() ){
+            Text(text = "You don't have any saved games")
+        } else {
+            ownGames.forEach { game ->
+                Text(text = "Username: ${game.username}")
+                Text(text = "Game score: ${game.score}")
+            }
         }
     }
+
 }
