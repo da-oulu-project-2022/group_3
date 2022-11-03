@@ -6,10 +6,11 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun LoggedInTestView( userVM: UserVM, auth: FirebaseAuth ){
+fun AboutUs(navControl: NavController, userVM: UserVM, auth: FirebaseAuth){
 
     var switch by remember { mutableStateOf(false) }
 
