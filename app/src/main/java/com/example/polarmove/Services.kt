@@ -27,18 +27,7 @@ fun register(email: String, password: String, username: String, userVM: UserVM, 
                 .set(user)
                 .addOnSuccessListener {
                     userVM.setEmail(email)
-                    userVM.setUsername(username)
                     auth.currentUser?.let { user -> userVM.signIn( user )}
                 }
-        }
-}
-
-fun changeStats( weight: Number, height: Number, age: Number, email: String, username: String, userVM: UserVM ){
-    val newUser = UserDataClass(username, email, weight, height, age)
-    Firebase.firestore.collection("users")
-        .document(email)
-        .set(newUser)
-        .addOnSuccessListener {
-            userVM.fetchUserData()
         }
 }

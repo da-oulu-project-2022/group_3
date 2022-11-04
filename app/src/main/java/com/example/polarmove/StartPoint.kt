@@ -33,7 +33,7 @@ fun StartPoint(){
                 MainScreen( navControl, userVM, auth )
             }
             composable( route = "GameScreen"){
-                GameScreen(navControl, userVM )
+                GameScreen(navControl, userVM, gameVM )
             }
             composable( route = "UserInfo"){
                 UserInfo( navControl, userVM )

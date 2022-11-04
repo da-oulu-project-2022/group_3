@@ -10,7 +10,7 @@ import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun GameScreen( navControl: NavController, userVM: UserVM ){
+fun GameScreen( navControl: NavController, userVM: UserVM, gameVM: GameVM ){
 
     Column(
         modifier = Modifier.fillMaxSize()

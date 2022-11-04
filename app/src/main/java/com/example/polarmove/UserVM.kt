@@ -10,7 +10,6 @@ import com.google.firebase.ktx.Firebase
 
 class UserVM: ViewModel() {
     var userEmail = mutableStateOf("")
-    var userName = mutableStateOf("")
     var user = mutableStateOf<FirebaseUser?>(null)
 
     var userData = UserDataClass()
@@ -21,10 +20,6 @@ class UserVM: ViewModel() {
 
     fun setEmail( email: String ){
         userEmail.value = email
-    }
-
-    fun setUsername( username: String ){
-        userName.value = username
     }
 
     fun signIn( userInfo: FirebaseUser ){
@@ -48,9 +43,22 @@ class UserVM: ViewModel() {
                     email = userEmail.value,
                     weight = fetchedData.get("weight") as Number,
                     height = fetchedData.get("height") as Number,
+                    gender = fetchedData.get("gender") as String,
                     age = fetchedData.get("age") as Number
                 )
                 userData = tempUserData
             }
     }
+
+    fun changeStats( weight: Number, height: Number, gender: String, age: Number ){
+        val newUser = UserDataClass(userData.username, userData.email, weight, height, gender, age)
+        Firebase.firestore.collection("users")
+            .document(userEmail.value)
+            .set(newUser)
+            .addOnSuccessListener {
+                userData = newUser
+                fetchUserData()
+            }
+    }
+
 }
