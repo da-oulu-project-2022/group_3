@@ -17,13 +17,15 @@ fun StartPoint(){
     val auth = FirebaseAuth.getInstance()
     val user: FirebaseUser? = auth.currentUser
 
+    //Fetching user data and set user if Firebase user is logged in
     if( user != null ){
         userVM.setUser( user )
         userVM.setEmail( user.email.toString() )
         userVM.fetchUserData()
         gameVM.getOwnGames( user.email.toString() )
     }
-    
+
+    //Start screen based on authentication
     if( userVM.user.value == null ){
         LoginRegister( userVM, auth )
     } else {

@@ -16,18 +16,21 @@ import androidx.navigation.NavController
 @Composable
 fun UserInfo( navControl: NavController, userVM: UserVM ){
 
-    var age by remember { mutableStateOf(userVM.userData.age.toString()) }
+    var userData by remember { mutableStateOf(userVM.userData)}
+
+    var age by remember { mutableStateOf(userData.age.toString()) }
     val ageRange = (1..100).toList()
 
-    var height by remember { mutableStateOf(userVM.userData.height.toString())}
+    var height by remember { mutableStateOf(userData.height.toString())}
     val heightRange = (90..220).toList()
 
-    var weight by remember { mutableStateOf(userVM.userData.weight.toString())}
+    var weight by remember { mutableStateOf(userData.weight.toString())}
     val weightRange = (30..150).toList()
 
-    var gender by remember { mutableStateOf(userVM.userData.gender)}
+    var gender by remember { mutableStateOf(userData.gender)}
     val genders = listOf("Male", "Female")
 
+    //Drop down menu booleans
     var ageExpanded by remember { mutableStateOf(false)}
     var heightExpanded by remember { mutableStateOf(false)}
     var weightExpanded by remember { mutableStateOf(false)}
@@ -35,23 +38,26 @@ fun UserInfo( navControl: NavController, userVM: UserVM ){
 
     var saveButton by remember { mutableStateOf(false)}
 
-    saveButton = age.toInt() != userVM.userData.age.toInt() ||
-            weight.toInt() != userVM.userData.weight.toInt() ||
-            height.toInt() != userVM.userData.height.toInt() ||
-            gender != userVM.userData.gender
+    //Visibility of the save button if stats are changed
+    saveButton = age.toInt() != userData.age.toInt() ||
+            weight.toInt() != userData.weight.toInt() ||
+            height.toInt() != userData.height.toInt() ||
+            gender != userData.gender
 
     Column(
         modifier = Modifier.fillMaxSize()
     ){
-        Text(text = "username: ${userVM.userData.username}")
-        Text(text = "weight: ${userVM.userData.weight}")
-        Text(text = "height: ${userVM.userData.height}")
-        Text(text = "age: ${userVM.userData.age}")
+
+        Text(text = "username: ${userData.username}")
+        Text(text = "weight: ${userData.weight}")
+        Text(text = "height: ${userData.height}")
+        Text(text = "age: ${userData.age}")
 
         OutlinedButton(onClick = { navControl.navigate("MainScreen") }) {
             Text(text = "Main screen")
         }
 
+        //Age input field and dropdown menu
         Column(){
             OutlinedTextField(
                 value = "$age y",
@@ -93,6 +99,7 @@ fun UserInfo( navControl: NavController, userVM: UserVM ){
             }
         }
 
+        //Height input field and dropdown menu
         Column(){
             OutlinedTextField(
                 value = "$height cm",
@@ -134,6 +141,7 @@ fun UserInfo( navControl: NavController, userVM: UserVM ){
             }
         }
 
+        //Weight input field and dropdown menu
         Column(){
             OutlinedTextField(
                 value = "$weight kg",
@@ -175,6 +183,7 @@ fun UserInfo( navControl: NavController, userVM: UserVM ){
             }
         }
 
+        //Gender input field and dropdown menu
         Column() {
             OutlinedTextField(
                 value = gender,
@@ -214,15 +223,18 @@ fun UserInfo( navControl: NavController, userVM: UserVM ){
             }
         }
 
+        //Save button if stats are changed
         if(saveButton){
             OutlinedButton(
                 onClick = {
-                    userVM.changeStats(weight.toInt(), height.toInt(), gender, age.toInt() )
-                    Log.d("user", userVM.userData.toString())
+                    val newUser = UserDataClass(userData.username, userData.email, weight.toInt(), height.toInt(), gender, age.toInt() )
+                    userVM.changeStats( newUser )
+                    userData = newUser
+                    Log.d("userVM", userVM.userData.toString())
                 }
             )
             {
-                    Text(text = "Save info")
+                Text(text = "Save info")
             }
         }
 

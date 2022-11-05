@@ -19,6 +19,8 @@ fun LoginRegister( userVM: UserVM, auth: FirebaseAuth ){
     var password by remember { mutableStateOf("")}
     var repeatPassword by remember { mutableStateOf("")}
     var username by remember { mutableStateOf("")}
+
+    //Boolean to add or remove input fields based on the wanted action
     var registerSwitch by remember { mutableStateOf(false)}
 
     Column(

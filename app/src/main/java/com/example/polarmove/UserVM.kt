@@ -50,8 +50,7 @@ class UserVM: ViewModel() {
             }
     }
 
-    fun changeStats( weight: Number, height: Number, gender: String, age: Number ){
-        val newUser = UserDataClass(userData.username, userData.email, weight, height, gender, age)
+    fun changeStats( newUser: UserDataClass ){
         Firebase.firestore.collection("users")
             .document(userEmail.value)
             .set(newUser)
