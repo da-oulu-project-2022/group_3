@@ -76,7 +76,7 @@ fun UserInfoContent( navControl: NavController, userVM: UserVM ){
                 .fillMaxHeight(.5f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            
+
             Row(
                 horizontalArrangement = Arrangement.Center
             ){
