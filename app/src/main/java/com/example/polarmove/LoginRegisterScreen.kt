@@ -1,15 +1,19 @@
 package com.example.polarmove
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
+import com.example.polarmove.ui.theme.PolarRed
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -23,73 +27,202 @@ fun LoginRegister( userVM: UserVM, auth: FirebaseAuth ){
     //Boolean to add or remove input fields based on the wanted action
     var registerSwitch by remember { mutableStateOf(false)}
 
+    var showPassword by remember { mutableStateOf(false)}
+    var showRepeatPassword by remember { mutableStateOf(false)}
+
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceAround
     ){
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it},
-            label = { Text(text = "email")},
-            singleLine = true
-        )
+        Column(
+            modifier = Modifier
+                .weight(1f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
 
-        if(registerSwitch){
+            Spacer(modifier = Modifier.height(20.dp))
+            TopBar()
+            Spacer(modifier = Modifier.height(20.dp))
+
+            if(registerSwitch) {
+                OutlinedTextField(
+                    value = username,
+                    onValueChange = { username = it },
+                    label = { Text(text = "username") },
+                    singleLine = true,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = PolarRed,
+                        cursorColor = PolarRed,
+                        textColor = PolarRed,
+                        focusedLabelColor = PolarRed
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth(.75f)
+                        .height(64.dp),
+                    shape = MaterialTheme.shapes.large,
+                    keyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Password)
+                )
+            }
             OutlinedTextField(
-                value = username,
-                onValueChange = { username = it},
-                label = { Text(text = "username")},
-                singleLine = true
+                value = email,
+                onValueChange = { email = it},
+                label = { Text(text = "email")},
+                trailingIcon = {
+                    Icon(
+                        painter = painterResource(R.drawable.email_icon),
+                        contentDescription = "mail icon",
+                        Modifier
+                            .padding(15.dp)
+                            .size(18.dp)
+                    )
+                },
+                singleLine = true,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = PolarRed,
+                    cursorColor = PolarRed,
+                    textColor = PolarRed,
+                    focusedLabelColor = PolarRed
+                ),
+                modifier = Modifier
+                    .fillMaxWidth(.75f)
+                    .height(64.dp),
+                shape = MaterialTheme.shapes.large,
+                keyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Password)
             )
             OutlinedTextField(
                 value = password,
                 label = { Text( text = "password")},
                 onValueChange = { password = it },
+                trailingIcon = {
+                    Icon(
+                        painter = if (showPassword) painterResource(R.drawable.visibility_off) else painterResource(R.drawable.visibility_on),
+                        contentDescription = "eye password",
+                        Modifier
+                            .padding(15.dp)
+                            .clickable { showPassword = !showPassword }
+                            .size(18.dp)
+                    )
+                },
                 singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = PolarRed,
+                    cursorColor = PolarRed,
+                    textColor = PolarRed,
+                    focusedLabelColor = PolarRed
+                ),
+                modifier = Modifier
+                    .fillMaxWidth(.75f)
+                    .height(64.dp),
+                shape = MaterialTheme.shapes.large,
+                visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Password)
             )
-            OutlinedTextField(
-                value = repeatPassword,
-                label = { Text( text = "repeat password")},
-                onValueChange = { repeatPassword = it },
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Password)
-            )
-        } else {
-            OutlinedTextField(
-                value = password,
-                label = { Text( text = "password")},
-                onValueChange = { password = it },
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Password)
-            )
-        }
+            if (registerSwitch){
+                OutlinedTextField(
+                    value = repeatPassword,
+                    label = { Text( text = "repeat password")},
+                    onValueChange = { repeatPassword = it },
+                    singleLine = true,
+                    trailingIcon = {
+                        Icon(
+                            painter = if (showRepeatPassword) painterResource(R.drawable.visibility_off) else painterResource(R.drawable.visibility_on),
+                            contentDescription = "eye password",
+                            Modifier
+                                .padding(15.dp)
+                                .clickable { showRepeatPassword = !showRepeatPassword }
+                                .size(18.dp)
+                        )
+                    },
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = PolarRed,
+                        cursorColor = PolarRed,
+                        textColor = PolarRed,
+                        focusedLabelColor = PolarRed
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth(.75f)
+                        .height(64.dp),
+                    shape = MaterialTheme.shapes.large,
+                    visualTransformation = if (showRepeatPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Password)
+                )
+            }
 
-        if(!registerSwitch){
-            OutlinedButton(
-                onClick = { login(email, password, userVM, auth) }
-            ){
-                Text( text = "Login")
-            }
-            OutlinedButton(
-                onClick = { registerSwitch = !registerSwitch }
-            ){
-                Text( text = "New user")
-            }
-        } else {
-            OutlinedButton(
-                onClick = { register(email, password, username, userVM, auth) }
-            ){
-                Text( text = "Register")
-            }
-            OutlinedButton(
-                onClick = { registerSwitch = !registerSwitch }
-            ){
-                Text( text = "Registered? Sign in")
+            Spacer(modifier = Modifier.height(5.dp))
+
+            if(!registerSwitch){
+                OutlinedButton(
+                    onClick = { login(email, password, userVM, auth) },
+                    modifier = Modifier
+                        .fillMaxWidth(.75f)
+                        .height(40.dp),
+                    shape = MaterialTheme.shapes.large,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colors.onPrimary,
+                        backgroundColor = MaterialTheme.colors.surface
+                    ),
+                    elevation = ButtonDefaults.elevation(2.dp, 2.dp, 0.dp)
+                ){
+                    Text( text = "Login")
+                }
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                OutlinedButton(
+                    onClick = {
+                        registerSwitch = !registerSwitch
+                        email = ""
+                        password = ""
+                        repeatPassword = ""
+                        username = ""
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(.75f)
+                        .height(40.dp),
+                    shape = MaterialTheme.shapes.large,
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                    elevation = ButtonDefaults.elevation(2.dp, 2.dp, 0.dp)
+                ){
+                    Text( text = "New user")
+                }
+            } else {
+                OutlinedButton(
+                    onClick = { register(email, password, username, userVM, auth) },
+                    modifier = Modifier
+                        .fillMaxWidth(.75f)
+                        .height(40.dp),
+                    shape = MaterialTheme.shapes.large,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colors.onPrimary,
+                        backgroundColor = MaterialTheme.colors.surface
+                    ),
+                    elevation = ButtonDefaults.elevation(2.dp, 2.dp, 0.dp)
+                ){
+                    Text( text = "Register")
+                }
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                OutlinedButton(
+                    onClick = {
+                        registerSwitch = !registerSwitch
+                        email = ""
+                        password = ""
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(.75f)
+                        .height(40.dp),
+                    shape = MaterialTheme.shapes.large,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = Color.White
+                    ),
+                    elevation = ButtonDefaults.elevation(2.dp, 2.dp, 0.dp)
+                ){
+                    Text( text = "Registered? Sign in")
+                }
             }
         }
-
     }
 }
