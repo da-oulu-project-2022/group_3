@@ -6,5 +6,6 @@ data class UserDataClass(
     var weight: Number = 0,
     var height: Number = 0,
     var gender: String = "",
-    var age: Number = 0
+    var age: Number = 0,
+    var highscore: Number = 0
 )

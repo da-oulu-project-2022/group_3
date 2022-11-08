@@ -1,5 +1,6 @@
 package com.example.polarmove
 
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -19,12 +20,13 @@ fun StartPoint(){
 
     //Fetching user data and set user if Firebase user is logged in
     if( user != null ){
-        userVM.setUser( user )
         userVM.setEmail( user.email.toString() )
         userVM.fetchUserData()
         gameVM.getOwnGames( user.email.toString() )
+        userVM.setUser( user )
     }
 
+    val scState = rememberScaffoldState()
     //Start screen based on authentication
     if( userVM.user.value == null ){
         LoginRegister( userVM, auth )
@@ -32,13 +34,13 @@ fun StartPoint(){
         val navControl = rememberNavController()
         NavHost(navController = navControl, startDestination = "MainScreen"){
             composable( route = "MainScreen"){
-                MainScreen( navControl, userVM, auth )
+                MainScreen( navControl, userVM, auth, scState )
             }
             composable( route = "GameScreen"){
                 GameScreen(navControl, userVM, gameVM )
             }
             composable( route = "UserInfo"){
-                UserInfo( navControl, userVM )
+                UserInfo( navControl, userVM, scState )
             }
             composable( route = "HighScores"){
                 HighScores( navControl, userVM, gameVM )

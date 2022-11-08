@@ -11,6 +11,8 @@ import com.google.firebase.ktx.Firebase
 class UserVM: ViewModel() {
     var userEmail = mutableStateOf("")
     var user = mutableStateOf<FirebaseUser?>(null)
+    var userName = mutableStateOf("")
+    var highScore = mutableStateOf("")
 
     var userData = UserDataClass()
 
@@ -20,6 +22,14 @@ class UserVM: ViewModel() {
 
     fun setEmail( email: String ){
         userEmail.value = email
+    }
+
+    fun setUsername( username: String){
+        userName.value = username
+    }
+
+    fun setHighscore( highscore: String ){
+        highScore.value = highscore
     }
 
     fun signIn( userInfo: FirebaseUser ){
@@ -44,8 +54,12 @@ class UserVM: ViewModel() {
                     weight = fetchedData.get("weight") as Number,
                     height = fetchedData.get("height") as Number,
                     gender = fetchedData.get("gender") as String,
-                    age = fetchedData.get("age") as Number
+                    age = fetchedData.get("age") as Number,
+                    highscore = fetchedData.get("highscore") as Number
                 )
+                setUsername(tempUserData.username)
+                setHighscore(tempUserData.highscore.toString())
+                setEmail(tempUserData.email)
                 userData = tempUserData
             }
     }
