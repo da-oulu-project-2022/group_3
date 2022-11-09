@@ -6,17 +6,18 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun LoggedInTestView( userVM: UserVM, auth: FirebaseAuth ){
+fun HighScores( navControl: NavController, userVM: UserVM, gameVM: GameVM ){
 
     Column(
         modifier = Modifier.fillMaxSize()
     ){
-        Text(text = "Logged In as: ${userVM.userEmail.value}")
-        OutlinedButton(onClick = {userVM.signOut( auth )}) {
-            Text(text = "Sign out")
+        OutlinedButton(onClick = { navControl.navigate("MainScreen") }) {
+            Text(text = "Main screen")
         }
     }
+
 }

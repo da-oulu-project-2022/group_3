@@ -1,15 +1,20 @@
 package com.example.polarmove.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
+import android.app.Activity
+import android.graphics.Color
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalView
 
 private val DarkColorPalette = darkColors(
     primary = Purple200,
     primaryVariant = Purple700,
-    secondary = Teal200
+    secondary = Teal200,
+    onPrimary = PolarRed,
+    background = PolarBlack
 )
 
 private val LightColorPalette = lightColors(
@@ -28,7 +33,7 @@ private val LightColorPalette = lightColors(
 )
 
 @Composable
-fun PolarMoveTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+fun PolarMoveTheme(darkTheme: Boolean = true, content: @Composable () -> Unit) {
     val colors = if (darkTheme) {
         DarkColorPalette
     } else {
@@ -41,4 +46,9 @@ fun PolarMoveTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composa
         shapes = Shapes,
         content = content
     )
+
+    val view = LocalView.current
+    val window = (view.context as Activity).window
+    window.statusBarColor = PolarBlack.toArgb()
+    window.navigationBarColor = PolarBlack.toArgb()
 }
