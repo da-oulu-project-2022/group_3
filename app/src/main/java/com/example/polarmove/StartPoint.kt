@@ -49,7 +49,7 @@ fun StartPoint(){
                 GameHistory( navControl, userVM, gameVM )
             }
             composable( route = "AboutUs"){
-                AboutUs( navControl, userVM )
+                AboutUs( navControl, scState )
             }
         }
     }

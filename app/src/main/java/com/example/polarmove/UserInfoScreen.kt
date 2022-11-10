@@ -25,12 +25,13 @@ fun UserInfo(
     Scaffold(
         scaffoldState = scState,
         topBar = { TopBar() },
-        content = { UserInfoContent( navControl, userVM )}
+        bottomBar = { BottomBar( navControl )},
+        content = { UserInfoContent( userVM )}
     )
 }
 
 @Composable
-fun UserInfoContent( navControl: NavController, userVM: UserVM ){
+fun UserInfoContent( userVM: UserVM ){
 
     var userData by remember { mutableStateOf(userVM.userData)}
 
@@ -102,7 +103,7 @@ fun UserInfoContent( navControl: NavController, userVM: UserVM ){
                         .fillMaxWidth(.2f),
                     horizontalAlignment = Alignment.Start
                 ){
-                    Row() {
+                    Row {
                         Text("WEIGH", style = MaterialTheme.typography.h1, fontSize = 12.sp)
                         Text(
                             "T",
@@ -112,7 +113,7 @@ fun UserInfoContent( navControl: NavController, userVM: UserVM ){
                         )
                     }
                     Spacer(modifier = Modifier.height(10.dp))
-                    Row() {
+                    Row {
                         Text(
                             "H",
                             color = PolarRed,
@@ -122,7 +123,7 @@ fun UserInfoContent( navControl: NavController, userVM: UserVM ){
                         Text("EIGHT", style = MaterialTheme.typography.h1, fontSize = 12.sp)
                     }
                     Spacer(modifier = Modifier.height(10.dp))
-                    Row() {
+                    Row {
                         Text("AG", style = MaterialTheme.typography.h1, fontSize = 12.sp)
                         Text(
                             "E",
@@ -132,7 +133,7 @@ fun UserInfoContent( navControl: NavController, userVM: UserVM ){
                         )
                     }
                     Spacer(modifier = Modifier.height(10.dp))
-                    Row() {
+                    Row {
                         Text(
                             "G",
                             color = PolarRed,
@@ -214,7 +215,7 @@ fun UserInfoContent( navControl: NavController, userVM: UserVM ){
         //Changing stats drop down menus
         Column(
             modifier = Modifier
-                .fillMaxHeight(.7f)
+                .fillMaxHeight()
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceAround
@@ -229,7 +230,7 @@ fun UserInfoContent( navControl: NavController, userVM: UserVM ){
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     //Age input field and dropdown menu
-                    Column(){
+                    Column{
                         OutlinedTextField(
                             value = "$age y",
                             label = { Text( text = "Age")},
@@ -272,7 +273,7 @@ fun UserInfoContent( navControl: NavController, userVM: UserVM ){
                     }
 
                     //Height input field and dropdown menu
-                    Column(){
+                    Column{
                         OutlinedTextField(
                             value = "$height cm",
                             label = { Text( text = "Height")},
@@ -322,7 +323,7 @@ fun UserInfoContent( navControl: NavController, userVM: UserVM ){
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     //Weight input field and dropdown menu
-                    Column(){
+                    Column{
                         OutlinedTextField(
                             value = "$weight kg",
                             label = { Text( text = "Weight")},
@@ -365,7 +366,7 @@ fun UserInfoContent( navControl: NavController, userVM: UserVM ){
                     }
 
                     //Gender input field and dropdown menu
-                    Column() {
+                    Column{
                         OutlinedTextField(
                             value = gender,
                             label = { Text( text = "Gender")},
@@ -405,27 +406,9 @@ fun UserInfoContent( navControl: NavController, userVM: UserVM ){
                         }
                     }
                 }
+                Spacer(modifier = Modifier.height(50.dp))
             }
-
         }
-
-        Spacer(modifier = Modifier.height(35.dp))
-
-        //Go back to main screen
-        OutlinedButton(
-            onClick = {navControl.navigate("MainScreen")},
-            modifier = Modifier
-                .fillMaxWidth(.75f)
-                .height(40.dp),
-            shape = MaterialTheme.shapes.large,
-            colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = MaterialTheme.colors.onPrimary,
-            ),
-            elevation = ButtonDefaults.elevation(2.dp, 2.dp, 0.dp)
-        ) {
-            Text( text = "Main screen")
-        }
-        Spacer(modifier = Modifier.height(35.dp))
     }
 
 }
