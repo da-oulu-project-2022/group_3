@@ -46,7 +46,10 @@ fun StartPoint(){
                 HighScores( navControl, userVM, gameVM )
             }
             composable( route = "GameHistory"){
-                GameHistory( navControl, userVM, gameVM )
+                GameHistory( navControl, userVM, gameVM, scState )
+            }
+            composable( route = "SavedGame"){
+
             }
             composable( route = "AboutUs"){
                 AboutUs( navControl, scState )

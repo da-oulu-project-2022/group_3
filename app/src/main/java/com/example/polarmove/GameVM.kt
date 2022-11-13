@@ -30,7 +30,8 @@ class GameVM: ViewModel() {
                             squats = game.get("squats") as Number,
                             score = game.get("score") as Number,
                             user_id = game.get("user_id") as String,
-                            username = game.get("username") as String
+                            username = game.get("username") as String,
+                            timestamp = game.get("timestamp") as Number
                         )
                         tempGamesList.add(fetchedGame)
                     }
