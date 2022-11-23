@@ -23,6 +23,7 @@ fun StartPoint(){
         userVM.setEmail( user.email.toString() )
         userVM.fetchUserData()
         gameVM.getOwnGames( user.email.toString() )
+        gameVM.getHighScores()
         userVM.setUser( user )
     }
 
@@ -31,6 +32,7 @@ fun StartPoint(){
     if( userVM.user.value == null ){
         LoginRegister( userVM, auth )
     } else {
+        val ownGames = gameVM.ownGames.value
         val navControl = rememberNavController()
         NavHost(navController = navControl, startDestination = "MainScreen"){
             composable( route = "MainScreen"){
@@ -43,13 +45,15 @@ fun StartPoint(){
                 UserInfo( navControl, userVM, scState )
             }
             composable( route = "HighScores"){
-                HighScores( navControl, userVM, gameVM )
+                HighScores( navControl, scState, gameVM, userVM )
             }
             composable( route = "GameHistory"){
                 GameHistory( navControl, userVM, gameVM, scState )
             }
-            composable( route = "SavedGame"){
-
+            ownGames.forEach { game ->
+                composable( route = game.timestamp.toString()){
+                    SavedGameScreen( navControl, scState, game )
+                }
             }
             composable( route = "AboutUs"){
                 AboutUs( navControl, scState )

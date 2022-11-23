@@ -1,23 +1,98 @@
 package com.example.polarmove
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
+import android.util.Log
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.polarmove.ui.theme.PolarRed
 import com.google.firebase.auth.FirebaseAuth
+import java.util.*
 
 @Composable
-fun HighScores( navControl: NavController, userVM: UserVM, gameVM: GameVM ){
+fun HighScores(
+    navControl: NavController,
+    scState: ScaffoldState,
+    gameVM: GameVM,
+    userVM: UserVM
+){
+    Scaffold(
+        scaffoldState = scState,
+        topBar = { TopBar() },
+        bottomBar = { BottomBar(navControl) },
+        content = { HighScoresContent( gameVM, userVM ) }
+    )
+}
+
+@Composable
+fun HighScoresContent( gameVM: GameVM, userVM: UserVM ){
+
+    val highScoreGames = gameVM.highScoreGames.value
+
+    val weight = userVM.userData.weight.toInt()
+    val age = userVM.userData.age.toInt()
+    val gender = userVM.userData.gender
+
+    val calories = gameVM.calorieCalculator( 14, 169, weight, age, gender )
+    Log.d("CALORIES: ", "${calories.toInt()}")
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ){
-        OutlinedButton(onClick = { navControl.navigate("MainScreen") }) {
-            Text(text = "Main screen")
+
+        Row(
+            horizontalArrangement = Arrangement.Center
+        ){
+            Text( "H", color = PolarRed, style = MaterialTheme.typography.h1, fontSize = 12.sp )
+            Text( "IGH ", style = MaterialTheme.typography.h1, fontSize = 12.sp )
+            Text( "SCORE", style = MaterialTheme.typography.h1, fontSize = 12.sp )
+            Text( "S", color = PolarRed, style = MaterialTheme.typography.h1, fontSize = 12.sp )
+        }
+        Spacer(modifier = Modifier.height(25.dp))
+
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .fillMaxSize(.86f)
+                .verticalScroll(enabled = true, state = ScrollState(1)),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            highScoreGames.forEach { game ->
+
+                OutlinedButton(
+                    onClick = {  },
+                    modifier = Modifier
+                        .fillMaxWidth(.75f)
+                        .height(40.dp),
+                    shape = MaterialTheme.shapes.large,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colors.onPrimary,
+                        backgroundColor = MaterialTheme.colors.surface
+                    ),
+                    elevation = ButtonDefaults.elevation(2.dp, 2.dp, 0.dp)
+                ) {
+                    Text(text = game.player, color = Color.White)
+                    Spacer(modifier = Modifier.width(120.dp))
+                    Text(text = game.score.toString())
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+            }
         }
     }
+
+
+
 
 }

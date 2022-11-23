@@ -68,7 +68,7 @@ fun GameHistoryContent( navControl: NavController, userVM: UserVM, gameVM: GameV
                     val dateString = "${dateSplit[2]} ${dateSplit[1]} ${dateSplit[5]}"
 
                     OutlinedButton(
-                        onClick = { },
+                        onClick = { navControl.navigate( game.timestamp.toString()) },
                         modifier = Modifier
                             .fillMaxWidth(.75f)
                             .height(40.dp),
