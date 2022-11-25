@@ -10,5 +10,5 @@ data class GameDataClass(
     var score: Number = 0,
     var user_id: String = "",
     var username: String = "",
-    var timestamp: Number = 0
+    var timestamp: Long = 0
 )

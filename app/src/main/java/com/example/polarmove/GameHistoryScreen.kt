@@ -63,7 +63,7 @@ fun GameHistoryContent( navControl: NavController, userVM: UserVM, gameVM: GameV
             } else {
                 ownGames.forEach { game ->
 
-                    val date = Date(game.timestamp.toLong()).toString()
+                    val date = Date(game.timestamp).toString()
                     val dateSplit = date.split(" ")
                     val dateString = "${dateSplit[2]} ${dateSplit[1]} ${dateSplit[5]}"
 

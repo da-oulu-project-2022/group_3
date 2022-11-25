@@ -36,12 +36,7 @@ fun HighScoresContent( gameVM: GameVM, userVM: UserVM ){
 
     val highScoreGames = gameVM.highScoreGames.value
 
-    val weight = userVM.userData.weight.toInt()
-    val age = userVM.userData.age.toInt()
-    val gender = userVM.userData.gender
-
-    val calories = gameVM.calorieCalculator( 14, 169, weight, age, gender )
-    Log.d("CALORIES: ", "${calories.toInt()}")
+    Log.d("CALORIES: ", "${gameVM.calories.value}")
 
     Column(
         modifier = Modifier
@@ -88,6 +83,23 @@ fun HighScoresContent( gameVM: GameVM, userVM: UserVM ){
 
                 Spacer(modifier = Modifier.height(10.dp))
 
+            }
+
+            OutlinedButton(
+                onClick = { gameVM.saveGame(110,128, userVM.userEmail.value, userVM.userName.value ) },
+                modifier = Modifier
+                    .fillMaxWidth(.75f)
+                    .height(40.dp),
+                shape = MaterialTheme.shapes.large,
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = MaterialTheme.colors.onPrimary,
+                    backgroundColor = MaterialTheme.colors.surface
+                ),
+                elevation = ButtonDefaults.elevation(2.dp, 2.dp, 0.dp)
+            ) {
+                Text(text = "Save new game", color = Color.White)
+                Spacer(modifier = Modifier.width(120.dp))
+//                Text(text = game.score.toString())
             }
         }
     }
