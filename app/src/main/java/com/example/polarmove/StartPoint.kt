@@ -8,9 +8,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.polar.sdk.api.PolarBleApi
 
 @Composable
-fun StartPoint(){
+fun StartPoint( api: PolarBleApi, hr: Int){
 
     val userVM: UserVM = viewModel()
     val gameVM: GameVM = viewModel()
@@ -39,7 +40,7 @@ fun StartPoint(){
                 MainScreen( navControl, userVM, auth, scState )
             }
             composable( route = "GameScreen"){
-                GameScreen(navControl, userVM, gameVM )
+                GameScreen(navControl, userVM, gameVM, api, hr )
             }
             composable( route = "UserInfo"){
                 UserInfo( navControl, userVM, scState )
