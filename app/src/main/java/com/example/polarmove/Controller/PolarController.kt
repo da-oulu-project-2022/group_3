@@ -42,19 +42,30 @@ class PolarController {
     private var connected = false
     private lateinit var api: PolarBleApi
 
-    val accelValuesArray = mutableStateOf(mutableListOf(intArrayOf(0,0,0)))
-    val accelSumArray = mutableStateOf(intArrayOf(0,0,0))
-    val isInPut = mutableStateOf(false)
-    var sensetivity=300
-    var baseline = 1000
+    private val accelValuesArray = mutableStateOf(mutableListOf(intArrayOf(0,0,0)))
+    private val accelSumArray = mutableStateOf(intArrayOf(0,0,0))
+    private val isInPut = mutableStateOf(false)
+
+
+    private var sensetivity=300 //Accel in mG
+    private var baseline = 1000 //Accel in mG
+    private var inputDelay=200 //time in ms
 
     //https://developer.android.com/kotlin/flow/stateflow-and-sharedflow
     //val inputChange: MutableStateFlow<Boolean> = MutableStateFlow<Boolean>(false)
-    private val _inputChangeHorizontal: MutableStateFlow<Boolean> = MutableStateFlow<Boolean>(false)
-    val inputChangeHorizontal = _inputChangeHorizontal.asStateFlow()
+    private val _inputLeft: MutableStateFlow<Boolean> = MutableStateFlow<Boolean>(false)
+    val inputLeft = _inputLeft.asStateFlow()
 
-    private val _inputChangeVertical: MutableStateFlow<Boolean> = MutableStateFlow<Boolean>(false)
-    val inputChangeVertical = _inputChangeVertical.asStateFlow()
+    private val _inputRight: MutableStateFlow<Boolean> = MutableStateFlow<Boolean>(false)
+    val inputRight = _inputRight.asStateFlow()
+
+    private val _inputUp: MutableStateFlow<Boolean> = MutableStateFlow<Boolean>(false)
+    val inputUp = _inputUp.asStateFlow()
+
+    private val _inputDown: MutableStateFlow<Boolean> = MutableStateFlow<Boolean>(false)
+    val inputDown = _inputDown.asStateFlow()
+
+
 
 
     val connectionStateText = mutableStateOf("text")
@@ -209,10 +220,10 @@ class PolarController {
                 Log.d(segmentTag,"X: ${currentSegmentVector3d.x} Y: ${currentSegmentVector3d.y} Z: ${currentSegmentVector3d.z} ")
 
                 if (currentSegmentVector3d.length()<baseline-sensetivity||currentSegmentVector3d.length()>baseline+sensetivity){
-                    _inputChangeHorizontal.value = true
+                    _inputLeft.value = true
                     Log.d(segmentTag,"true")
                 }else {
-                    _inputChangeHorizontal.value = false
+                    _inputLeft.value = false
                     Log.d(segmentTag,"false")
                 }
 
