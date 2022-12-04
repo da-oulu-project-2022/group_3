@@ -1,7 +1,10 @@
 package com.example.polarmove
 
 import android.util.Log
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -15,7 +18,14 @@ class GameVM: ViewModel() {
     var squats = mutableStateOf(0)
     var dashes = mutableStateOf(0)
     var score = mutableStateOf(0)
-    var calories = mutableStateOf(0)
+    var calories = mutableStateOf(2800)
+
+    class Object(
+        val x: Int = 0,
+        val y: Int = 0,
+        val z: Int = 0,
+        val name: String = ""
+    )
 
     fun getOwnGames( email: String ){
         Firebase.firestore

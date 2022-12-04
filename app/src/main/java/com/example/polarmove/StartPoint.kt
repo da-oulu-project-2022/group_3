@@ -11,7 +11,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.polar.sdk.api.PolarBleApi
 
 @Composable
-fun StartPoint( api: PolarBleApi, hr: Int){
+fun StartPoint( api: PolarBleApi, hr: Int, height: Int, width: Int){
 
     val userVM: UserVM = viewModel()
     val gameVM: GameVM = viewModel()
@@ -40,7 +40,7 @@ fun StartPoint( api: PolarBleApi, hr: Int){
                 MainScreen( navControl, userVM, auth, scState )
             }
             composable( route = "GameScreen"){
-                GameScreen(navControl, userVM, gameVM, api, hr )
+                GameScreen(navControl, userVM, gameVM, api, hr, height, width )
             }
             composable( route = "UserInfo"){
                 UserInfo( navControl, userVM, scState )

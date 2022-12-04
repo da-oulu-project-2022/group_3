@@ -3,6 +3,7 @@ package com.example.polarmove
 import android.Manifest
 import android.os.Build
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -121,13 +122,18 @@ class MainActivity : ComponentActivity() {
                 }
             })
 
+            val displayMetrics = DisplayMetrics()
+            windowManager.defaultDisplay.getMetrics(displayMetrics)
+            val height = displayMetrics.heightPixels
+            val width = displayMetrics.widthPixels
+
             PolarMoveTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    StartPoint( api, hr.value )
+                    StartPoint( api, hr.value, height, width )
                 }
             }
         }
