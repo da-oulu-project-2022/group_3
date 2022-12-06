@@ -127,6 +127,9 @@ class MainActivity : ComponentActivity() {
             val height = displayMetrics.heightPixels
             val width = displayMetrics.widthPixels
 
+            deviceHeightInPixels = displayMetrics.heightPixels
+            deviceWidthInPixels = displayMetrics.widthPixels
+
             PolarMoveTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(

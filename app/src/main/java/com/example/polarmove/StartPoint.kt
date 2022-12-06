@@ -40,7 +40,7 @@ fun StartPoint( api: PolarBleApi, hr: Int, height: Int, width: Int){
                 MainScreen( navControl, userVM, auth, scState )
             }
             composable( route = "GameScreen"){
-                GameScreen(navControl, userVM, gameVM, api, hr, height, width )
+                GameScreen(navControl, userVM, gameVM, api, hr, height, width, GameState() )
             }
             composable( route = "UserInfo"){
                 UserInfo( navControl, userVM, scState )
