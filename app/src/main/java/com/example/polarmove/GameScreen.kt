@@ -32,15 +32,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
 
-var deviceHeightInPixels = 1920
-var deviceWidthInPixels = 1080
-var distanceBetweenObstacles = 1000
-var obstacleSpeed = 5
-const val distanceBetweenLines = 10
-//val xPossibilities = listOf( obst1.toInt(), obst2.toInt(), obst3.toInt() )
 
 @Composable
-fun GameScreen( navControl: NavController, userVM: UserVM, gameVM: GameVM, api: PolarBleApi, hr: Int, height: Int, width: Int, gameState: GameState ){
+fun GameScreen(
+    navControl: NavController,
+    userVM: UserVM,
+    gameVM: GameVM,
+    api: PolarBleApi,
+    hr: Int, height: Int,
+    width: Int,
+    gameState: GameState,
+    walkCycle: ArrayList<ImageBitmap>,
+    roadObjects: ArrayList<ImageBitmap>
+){
 
 //    val TAG = "MY-TAG"
 //
@@ -146,12 +150,28 @@ fun GameScreen( navControl: NavController, userVM: UserVM, gameVM: GameVM, api: 
 
 //    val option = BitmapFactory.Options()
 //    option.inPreferredConfig = Bitmap.Config.ARGB_8888
-    val walk1 = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.catwalkcycle ).asImageBitmap()
-    val walk2 = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.catwalkcycle2 ).asImageBitmap()
 
-    val obstacleState by remember { mutableStateOf( ObstacleState() ) }
+//    var walk1: ImageBitmap
+//    var walk2: ImageBitmap
+//    var imageBoolean by remember { mutableStateOf(false)}
+//
+//
+//    if ( deviceWidthInPixels > 1080 ) {
+//        walk1 = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.catwalkcycle1 ).asImageBitmap()
+//        walk2 = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.catwalkcycle2 ).asImageBitmap()
+//
+//        Log.d("COUNTER", "COUUUUUUUUNT")
+//    } else {
+//        val walk1bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.catwalkcycle1 )
+//        val walk2bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.catwalkcycle2 )
+//        walk1 = Bitmap.createScaledBitmap( walk1bitmap, 380, 380, true ).asImageBitmap()
+//        walk2 = Bitmap.createScaledBitmap( walk2bitmap, 380, 380, true ).asImageBitmap()
+//    }
+
+
+    val obstacleState by remember { mutableStateOf( ObstacleState( roadObjects = roadObjects) ) }
     val roadState by remember { mutableStateOf( RoadState() ) }
-    val playerState by remember { mutableStateOf( PlayerState( walk1 = walk1, walk2 = walk2) ) }
+    val playerState by remember { mutableStateOf( PlayerState( walkCycle = walkCycle ) ) }
     val currentScore by gameState.currentScore.observeAsState()
     val highScore by gameState.highScore.observeAsState()
 
@@ -206,9 +226,12 @@ fun GameScreen( navControl: NavController, userVM: UserVM, gameVM: GameVM, api: 
 fun DrawScope.obstacleView( obstacleState: ObstacleState ) {
     obstacleState.obstacleList.forEach { obstacle ->
         withTransform({
+//            scale( .8f, .8f)
             translate( left = obstacle.xPos.toFloat(), top = obstacle.yPos.toFloat() )
         }) {
-            drawRect( color = Color.Red, size = Size( width = obstacle.size.toFloat(), height = obstacle.size.toFloat() ) )
+//            drawRect( color = Color.Red, size = Size( width = obstacle.size.toFloat(), height = obstacle.size.toFloat() ) )
+            drawImage( obstacle.image )
+            drawBoundingBox( Color.Red, obstacle.getBounds())
         }
     }
 }

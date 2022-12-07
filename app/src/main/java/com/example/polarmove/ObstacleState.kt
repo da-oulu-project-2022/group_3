@@ -1,9 +1,12 @@
 package com.example.polarmove
 
+import android.util.Log
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.ImageBitmap
 
 data class ObstacleState(
     val obstacleList: ArrayList<ObstacleModel> = ArrayList(),
+    var roadObjects: ArrayList<ImageBitmap>,
     val obst1: Int = deviceWidthInPixels - (distanceBetweenLines + deviceWidthInPixels * 0.16 + deviceWidthInPixels * 0.01).toInt(),
     val obst2: Int = obst1 - (distanceBetweenLines + deviceWidthInPixels * 0.16 + deviceWidthInPixels * 0.02 ).toInt(),
     val obst3: Int = obst2 - (distanceBetweenLines + deviceWidthInPixels * 0.16 + deviceWidthInPixels * 0.02 ).toInt(),
@@ -12,19 +15,22 @@ data class ObstacleState(
 
     init {
         initObstacle()
+        Log.d("MESSAGE", "SSSSSSSS")
     }
 
     fun initObstacle() {
         obstacleList.clear()
         var startY = -200
         var obstacleCount = 4
+        val imageCount = (0..5)
 
         for ( i in 0 until obstacleCount ) {
-            var obstacle = ObstacleModel(
+            val count = (0..2)
+            val obstacle = ObstacleModel(
 //                xPos = xPossibilities[(0..2).random()],
-                xPos = obstXposs[(0..2).random()],
-                yPos = startY
-
+                xPos = obstXposs[count.random()],
+                yPos = startY,
+                image = roadObjects[imageCount.random()]
             )
             obstacleList.add(obstacle)
 
@@ -34,15 +40,19 @@ data class ObstacleState(
 
     fun moveDown() {
         obstacleList.forEach { obstacle ->
-            obstacle.yPos += obstacleSpeed
+            obstacle.yPos += obstacleSpeed * 3
+            Log.d("OBSTACLE Y", obstacle.yPos.toString())
         }
+        val imageCount = (0..5)
+        val count = (0..2)
 
         if ( obstacleList.first().yPos >= deviceHeightInPixels + 100 ) {
             obstacleList.removeAt(0)
-            var obstacle = ObstacleModel(
+            val obstacle = ObstacleModel(
 //                xPos = xPossibilities[(0..2).random()],
-                xPos = obstXposs[( 0..2).random()],
-                yPos = nextObstacleY(obstacleList.last().yPos)
+                xPos = obstXposs[count.random()],
+                yPos = nextObstacleY(obstacleList.last().yPos),
+                image = roadObjects[imageCount.random()]
             )
             obstacleList.add(obstacle)
         }
@@ -58,17 +68,19 @@ data class ObstacleState(
 }
 
 data class ObstacleModel(
-    var xPos: Int = 0,
-    var yPos: Int = 0,
-    var zLevel: Int = 2,
-    var size: Int = (deviceWidthInPixels * 0.16).toInt()
+    var xPos: Int,
+    var yPos: Int,
+    var zLevel: Int = 1,
+    var image: ImageBitmap
+//    var size: Int = (deviceWidthInPixels * 0.16).toInt()
 ) {
     fun getBounds(): Rect {
+        Log.d("RECTANGLE", yPos.toString())
         return Rect(
             left = xPos.toFloat(),
             top = yPos.toFloat(),
-            right = xPos.toFloat() + size,
-            bottom = yPos.toFloat() + size
+            right = (xPos + image.width).toFloat(),
+            bottom = (yPos + image.height).toFloat()
         )
     }
 }

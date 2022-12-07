@@ -17,9 +17,10 @@ class PlayerState(
     var yPos: Int = 0,
     var zLevel: Int = 0,
     var keyframe: Int = 0,
-    var walk1: ImageBitmap,
-    var walk2: ImageBitmap,
-    private var bitMapList: ArrayList<ImageBitmap> = arrayListOf(),
+//    var walk1: ImageBitmap,
+//    var walk2: ImageBitmap,
+//    private var bitMapList: ArrayList<ImageBitmap> = arrayListOf(),
+    var walkCycle: ArrayList<ImageBitmap>,
     var isJumping: Boolean = false,
     var isCrawling: Boolean = false,
     val pos1: Int = deviceWidthInPixels - (distanceBetweenLines + deviceWidthInPixels * 0.25 + deviceWidthInPixels * 0.01).toInt(),
@@ -28,11 +29,12 @@ class PlayerState(
 ) {
 
     val image: ImageBitmap
-        get() = if ( keyframe <= 10) bitMapList[0] else bitMapList[1]
+//        get() = if ( keyframe <= 10) bitMapList[0] else bitMapList[1]
+        get() = if ( keyframe <= 10) walkCycle[0] else walkCycle[1]
 
     init {
-        bitMapList.add( walk1 )
-        bitMapList.add( walk2 )
+//        bitMapList.add( walk1 )
+//        bitMapList.add( walk2 )
         playerInit()
     }
 
@@ -40,7 +42,7 @@ class PlayerState(
 //        xPos = 0
         xPos = pos2
         yPos = (deviceHeightInPixels - (deviceHeightInPixels * 0.26 + distanceBetweenLines * 3)).toInt()
-        zLevel = 1
+        zLevel = 0
         isJumping = false
         isCrawling = false
     }

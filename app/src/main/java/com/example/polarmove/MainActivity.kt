@@ -24,6 +24,13 @@ import com.polar.sdk.api.model.PolarDeviceInfo
 import com.polar.sdk.api.model.PolarHrData
 import java.util.*
 
+
+var deviceHeightInPixels = 3060
+var deviceWidthInPixels = 1440
+var distanceBetweenObstacles = 1000
+var obstacleSpeed = 1
+const val distanceBetweenLines = 10
+
 class MainActivity : ComponentActivity() {
 
     companion object {
