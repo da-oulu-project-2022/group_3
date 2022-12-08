@@ -45,7 +45,9 @@ fun GameScreen(
     width: Int,
     gameState: GameState,
     walkCycle: ArrayList<ImageBitmap>,
-    roadObjects: ArrayList<ImageBitmap>
+    roadObjects: ArrayList<ImageBitmap>,
+    backgroundObjects: ArrayList<ImageBitmap>
+
 ){
 
 //    val TAG = "MY-TAG"
@@ -172,6 +174,7 @@ fun GameScreen(
 
 
     val obstacleState by remember { mutableStateOf( ObstacleState( roadObjects = roadObjects) ) }
+    val bgItemsState by remember { mutableStateOf( bgItemsState( backgroundObjects = backgroundObjects ) ) }
     val roadState by remember { mutableStateOf( RoadState() ) }
     val playerState by remember { mutableStateOf( PlayerState( walkCycle = walkCycle ) ) }
     val currentScore by gameState.currentScore.observeAsState()
@@ -180,6 +183,7 @@ fun GameScreen(
     if ( !gameState.isGameOver ) {
         gameState.increaseScore()
         obstacleState.moveDown()
+        bgItemsState.moveDown()
         playerState.run()
 
         obstacleState.obstacleList.forEach { obstacle ->
@@ -206,6 +210,7 @@ fun GameScreen(
                     } else {
                         roadState.initLane()
                         obstacleState.initObstacle()
+                        bgItemsState.initBgItems()
                         playerState.playerInit()
                         gameState.replay()
                     }
@@ -216,7 +221,9 @@ fun GameScreen(
         HighScoreTextViews(requireNotNull(currentScore), requireNotNull(highScore), userVM)
         Canvas( modifier = Modifier.fillMaxSize() ){
             roadView( roadState )
+            roadBricks( obstacleState )
             obstacleView( obstacleState )
+            backgroundItemView( bgItemsState )
             playerView( playerState )
 //            drawImage( walk1, alpha = 1f, style = Fill, topLeft = Offset( x = playerState.xPos.toFloat(), y = playerState.yPos.toFloat()) )
         }
@@ -239,6 +246,18 @@ fun DrawScope.obstacleView( obstacleState: ObstacleState ) {
     }
 }
 
+fun DrawScope.backgroundItemView( bgItemsState: bgItemsState ) {
+    bgItemsState.bgItemList.forEach { background ->
+        withTransform({
+//            scale( .8f, .8f)
+            translate( left = background.xPos.toFloat(), top = background.yPos.toFloat() )
+        }) {
+//            drawRect( color = Color.Red, size = Size( width = obstacle.size.toFloat(), height = obstacle.size.toFloat() ) )
+            drawImage( background.image )
+        }
+    }
+}
+
 fun DrawScope.roadView( roadState: RoadState ) {
     roadState.laneList.forEach { lane ->
         drawRect( color = Color.Gray,
@@ -246,6 +265,37 @@ fun DrawScope.roadView( roadState: RoadState ) {
             size = Size( width = lane.width.toFloat(), height = lane.height.toFloat()) )
     }
 }
+fun DrawScope.roadBricks( obstacleState: ObstacleState ) {
+    obstacleState.obstacleList.forEach { obstacle ->
+            // Brick work
+            drawLine(
+                color = Color.LightGray,
+                start = Offset(
+                    x = (deviceWidthInPixels.toFloat() * 0.99).toFloat(),
+                    y = obstacle.yPos.toFloat() + 2000
+                ),
+                end = Offset(
+                    x = (deviceWidthInPixels.toFloat() / 2.27).toFloat(),
+                    y = obstacle.yPos.toFloat() + 2000
+                ),
+                strokeWidth = 10f
+            )
+
+            drawLine(
+                color = Color.LightGray,
+                start = Offset(
+                    x = (deviceWidthInPixels.toFloat() * 0.99).toFloat(),
+                    y = obstacle.yPos.toFloat() - 2000
+                ),
+                end = Offset(
+                    x = (deviceWidthInPixels.toFloat() / 2.27).toFloat(),
+                    y = obstacle.yPos.toFloat() - 2000
+                ),
+                strokeWidth = 10f
+            )
+        }
+    }
+
 
 fun DrawScope.playerView( playerState: PlayerState ) {
     drawImage( playerState.image, topLeft = Offset( x = playerState.xPos.toFloat(), y = playerState.yPos.toFloat()) )
