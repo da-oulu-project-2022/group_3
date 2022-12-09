@@ -1,11 +1,7 @@
 package com.example.polarmove
 
-import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Log
+import android.text.Selection.moveDown
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -21,18 +17,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.polar.sdk.api.PolarBleApi
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.autofill.AutofillType
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.core.graphics.drawable.toBitmap
-import androidx.core.graphics.drawable.toDrawable
-import com.google.firebase.firestore.core.UserData
 
 
 @Composable
@@ -46,7 +34,8 @@ fun GameScreen(
     gameState: GameState,
     walkCycle: ArrayList<ImageBitmap>,
     roadObjects: ArrayList<ImageBitmap>,
-    backgroundObjects: ArrayList<ImageBitmap>
+    backgroundObjects: ArrayList<ImageBitmap>,
+    cloudItems: ArrayList<ImageBitmap>
 
 ){
 
@@ -175,6 +164,7 @@ fun GameScreen(
 
     val obstacleState by remember { mutableStateOf( ObstacleState( roadObjects = roadObjects) ) }
     val bgItemsState by remember { mutableStateOf( bgItemsState( backgroundObjects = backgroundObjects ) ) }
+    val cloudState by remember { mutableStateOf( cloudState( cloudItems = cloudItems ) ) }
     val roadState by remember { mutableStateOf( RoadState() ) }
     val playerState by remember { mutableStateOf( PlayerState( walkCycle = walkCycle ) ) }
     val currentScore by gameState.currentScore.observeAsState()
@@ -184,6 +174,7 @@ fun GameScreen(
         gameState.increaseScore()
         obstacleState.moveDown()
         bgItemsState.moveDown()
+        cloudState.moveDown()
         playerState.run()
 
         obstacleState.obstacleList.forEach { obstacle ->
@@ -224,6 +215,7 @@ fun GameScreen(
             roadBricks( obstacleState )
             obstacleView( obstacleState )
             backgroundItemView( bgItemsState )
+            cloudView( cloudState )
             playerView( playerState )
 //            drawImage( walk1, alpha = 1f, style = Fill, topLeft = Offset( x = playerState.xPos.toFloat(), y = playerState.yPos.toFloat()) )
         }
@@ -254,6 +246,18 @@ fun DrawScope.backgroundItemView( bgItemsState: bgItemsState ) {
         }) {
 //            drawRect( color = Color.Red, size = Size( width = obstacle.size.toFloat(), height = obstacle.size.toFloat() ) )
             drawImage( background.image )
+        }
+    }
+}
+
+fun DrawScope.cloudView( cloudState: cloudState ) {
+    cloudState.cloudList.forEach { clouds ->
+        withTransform({
+//            scale( .8f, .8f)
+            translate( left = clouds.xPos.toFloat(), top = clouds.yPos.toFloat() )
+        }) {
+//            drawRect( color = Color.Red, size = Size( width = obstacle.size.toFloat(), height = obstacle.size.toFloat() ) )
+            drawImage( clouds.image )
         }
     }
 }

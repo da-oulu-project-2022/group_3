@@ -16,9 +16,9 @@ data class bgItemsState(
 
     fun initBgItems() {
         bgItemList.clear()
-        var startY = 3000
+        var startY = 2000
         var obstacleCount = 4
-        val imageCount = (0..15)
+        val imageCount = (0..14)
 
         for ( i in 0 until obstacleCount ) {
             val count = (0..2)
@@ -36,7 +36,7 @@ data class bgItemsState(
     fun moveDown() {
         bgItemList.forEach { background ->
             background.yPos += obstacleSpeed * 3
-            Log.d("OBSTACLE Y", background.yPos.toString())
+            Log.d("BG Y", background.yPos.toString())
         }
         val imageCount = (0..5)
         val count = (0..2)

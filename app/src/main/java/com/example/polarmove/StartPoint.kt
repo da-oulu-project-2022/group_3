@@ -47,7 +47,7 @@ fun StartPoint( api: PolarBleApi, hr: Int, height: Int, width: Int){
 //    val streetlight: ImageBitmap
     val roadObjects: ArrayList<ImageBitmap> = ArrayList()
 
-    //Background objects
+//    Background objects
     val house: ImageBitmap
     val house2: ImageBitmap
     val house3: ImageBitmap
@@ -64,6 +64,16 @@ fun StartPoint( api: PolarBleApi, hr: Int, height: Int, width: Int){
     val streetlight: ImageBitmap
     val trashcanbg: ImageBitmap
     val backgroundObjects: ArrayList<ImageBitmap> = ArrayList()
+
+//    Clouds
+    val cloud: ImageBitmap
+    val cloud2: ImageBitmap
+    val cloud3: ImageBitmap
+    val cloud4: ImageBitmap
+    val cloudItems: ArrayList<ImageBitmap> = ArrayList()
+
+//   Manhole
+    val manhole: ImageBitmap
 
     if ( deviceWidthInPixels > 1080 ) {
 //        walk1 = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.catwalkcycle1 ).asImageBitmap()
@@ -110,6 +120,16 @@ fun StartPoint( api: PolarBleApi, hr: Int, height: Int, width: Int){
         val streetlightBitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.streetlight )
         val trashcanbgBitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.trashcan2  )
 
+//           Clouds
+        val cloudBitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.cloud  )
+        val cloud2Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.cloud2ver1  )
+        val cloud3Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.cloud2ver2)
+        val cloud4Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.cloud2ver3  )
+
+//          Manhole
+        val manholeBitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.manhole  )
+
+
 //           Obstacles
         grandma = Bitmap.createScaledBitmap( grandmaBitmap, 280, 280, true ).asImageBitmap()
         trashcan = Bitmap.createScaledBitmap( trashcanBitmap, 280, 280, true ).asImageBitmap()
@@ -131,14 +151,22 @@ fun StartPoint( api: PolarBleApi, hr: Int, height: Int, width: Int){
         bush3 = Bitmap.createScaledBitmap( bush3Bitmap, deviceWidthInPixels-600, deviceWidthInPixels-600, true ).asImageBitmap()
         tree = Bitmap.createScaledBitmap( treeBitmap, deviceWidthInPixels-600, deviceWidthInPixels-600, true ).asImageBitmap()
         tree2 = Bitmap.createScaledBitmap( tree2Bitmap, deviceWidthInPixels-600, deviceWidthInPixels-600, true ).asImageBitmap()
-        flower = Bitmap.createScaledBitmap( flowerBitmap, deviceWidthInPixels-600, deviceWidthInPixels-600, true ).asImageBitmap()
-        greenery = Bitmap.createScaledBitmap( greeneryBitmap, deviceWidthInPixels-600, deviceWidthInPixels-600, true ).asImageBitmap()
+        flower = Bitmap.createScaledBitmap( flowerBitmap, deviceWidthInPixels-900, deviceWidthInPixels-900, true ).asImageBitmap()
+        greenery = Bitmap.createScaledBitmap( greeneryBitmap, deviceWidthInPixels-900, deviceWidthInPixels-900, true ).asImageBitmap()
         streetlight = Bitmap.createScaledBitmap( streetlightBitmap, deviceWidthInPixels-600, deviceWidthInPixels-600, true ).asImageBitmap()
-        trashcanbg = Bitmap.createScaledBitmap( trashcanbgBitmap, deviceWidthInPixels-600, deviceWidthInPixels-600, true ).asImageBitmap()
+        trashcanbg = Bitmap.createScaledBitmap( trashcanbgBitmap, deviceWidthInPixels-900, deviceWidthInPixels-900, true ).asImageBitmap()
+
+//           Clouds
+        cloud = Bitmap.createScaledBitmap( cloudBitmap, 480, 480, true ).asImageBitmap()
+        cloud2 = Bitmap.createScaledBitmap(cloud2Bitmap, 480, 480, true ).asImageBitmap()
+        cloud3 =  Bitmap.createScaledBitmap( cloud3Bitmap, 480, 480, true ).asImageBitmap()
+        cloud4 =  Bitmap.createScaledBitmap( cloud4Bitmap, 480, 480, true ).asImageBitmap()
+
+//          Manhole
+        manhole =  Bitmap.createScaledBitmap( manholeBitmap, 480, 480, true ).asImageBitmap()
 
 
-
-//      Add obstacles to obstacle list
+//      Add obstacles to obstacle roadObjects list
         roadObjects.add( grandma )
         roadObjects.add( trashcan )
         roadObjects.add( trashcan2 )
@@ -147,7 +175,8 @@ fun StartPoint( api: PolarBleApi, hr: Int, height: Int, width: Int){
         roadObjects.add( benchCat )
 //        roadObjects.add( streetlight )
 
-//      Add Background objects to list
+
+//      Add Background objects to backgroundObjects list
         backgroundObjects.add( house )
         backgroundObjects.add( house2 )
         backgroundObjects.add( house3 )
@@ -163,6 +192,13 @@ fun StartPoint( api: PolarBleApi, hr: Int, height: Int, width: Int){
         backgroundObjects.add( greenery )
         backgroundObjects.add( streetlight )
         backgroundObjects.add( trashcanbg )
+
+//       Add Clouds objects to cloudItems list
+        cloudItems.add( cloud )
+        cloudItems.add( cloud2 )
+        cloudItems.add( cloud3 )
+        cloudItems.add( cloud4 )
+
 
         Log.d("COUNTER", "COUUUUUUUUNT")
     } else {
@@ -182,7 +218,7 @@ fun StartPoint( api: PolarBleApi, hr: Int, height: Int, width: Int){
         val benchCatBitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.bench_cat )
 //        val streetlightBitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.streetlight )
 
-        //          Background objects
+//                 Background objects
         val houseBitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.house1version1  )
         val house2Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.house1version2 )
         val house3Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.house1version3 )
@@ -200,6 +236,14 @@ fun StartPoint( api: PolarBleApi, hr: Int, height: Int, width: Int){
         val trashcanbgBitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.trashcan2  )
 
 
+//              Clouds
+        val cloudBitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.cloud  )
+        val cloud2Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.cloud2ver1  )
+        val cloud3Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.cloud2ver2)
+        val cloud4Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.cloud2ver3  )
+
+
+//        Objects
         grandma = Bitmap.createScaledBitmap( grandmaBitmap, 320, 320, true ).asImageBitmap()
         trashcan = Bitmap.createScaledBitmap( trashcanBitmap, 320, 320, true ).asImageBitmap()
         trashcan2 = Bitmap.createScaledBitmap( trascan2Bitmap, 320, 320, true ).asImageBitmap()
@@ -223,7 +267,14 @@ fun StartPoint( api: PolarBleApi, hr: Int, height: Int, width: Int){
         flower = Bitmap.createScaledBitmap( flowerBitmap, deviceWidthInPixels-600, deviceWidthInPixels-600, true ).asImageBitmap()
         greenery = Bitmap.createScaledBitmap( greeneryBitmap, deviceWidthInPixels-600, deviceWidthInPixels-600, true ).asImageBitmap()
         streetlight = Bitmap.createScaledBitmap( streetlightBitmap, deviceWidthInPixels-600, deviceWidthInPixels-600, true ).asImageBitmap()
-        trashcanbg = Bitmap.createScaledBitmap( trashcanbgBitmap, deviceWidthInPixels-600, deviceWidthInPixels-600, true ).asImageBitmap()
+        trashcanbg = Bitmap.createScaledBitmap( trashcanbgBitmap, deviceWidthInPixels-900, deviceWidthInPixels-900, true ).asImageBitmap()
+
+//               Clouds
+        cloud = Bitmap.createScaledBitmap( cloudBitmap, 520, 520, true ).asImageBitmap()
+        cloud2 = Bitmap.createScaledBitmap(cloud2Bitmap, 520, 520, true ).asImageBitmap()
+        cloud3 =  Bitmap.createScaledBitmap( cloud3Bitmap, 520, 520, true ).asImageBitmap()
+        cloud4 =  Bitmap.createScaledBitmap( cloud4Bitmap, 520, 520, true ).asImageBitmap()
+
 
 //       Add obstacles to obstacle list
         roadObjects.add( grandma )
@@ -250,6 +301,14 @@ fun StartPoint( api: PolarBleApi, hr: Int, height: Int, width: Int){
         backgroundObjects.add( greenery )
         backgroundObjects.add( streetlight )
         backgroundObjects.add( trashcanbg )
+
+        //       Add Clouds objects to cloudItems list
+        cloudItems.add( cloud )
+        cloudItems.add( cloud2 )
+        cloudItems.add( cloud3 )
+        cloudItems.add( cloud4 )
+
+
     }
 
     Log.d( "HEIGHT", deviceHeightInPixels.toString())
@@ -267,7 +326,7 @@ fun StartPoint( api: PolarBleApi, hr: Int, height: Int, width: Int){
                 MainScreen( navControl, userVM, auth, scState )
             }
             composable( route = "GameScreen"){
-                GameScreen(navControl, userVM, gameVM, api, hr, height, width, GameState(), walkCycle, roadObjects, backgroundObjects )
+                GameScreen(navControl, userVM, gameVM, api, hr, height, width, GameState(), walkCycle, roadObjects, backgroundObjects, cloudItems )
             }
             composable( route = "UserInfo"){
                 UserInfo( navControl, userVM, scState )
