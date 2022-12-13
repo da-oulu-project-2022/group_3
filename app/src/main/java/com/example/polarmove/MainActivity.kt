@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.polarmove.ui.theme.PolarMoveTheme
 import com.polar.sdk.api.PolarBleApi
 import com.polar.sdk.api.PolarBleApiCallback
@@ -25,8 +26,8 @@ import com.polar.sdk.api.model.PolarHrData
 import java.util.*
 
 
-var deviceHeightInPixels = 3060
-var deviceWidthInPixels = 1440
+var deviceHeightInPixels = 1920
+var deviceWidthInPixels = 1080
 var distanceBetweenObstacles = 1000
 var obstacleSpeed = 1
 const val distanceBetweenLines = 10
@@ -56,11 +57,12 @@ class MainActivity : ComponentActivity() {
 
     private var bluetoothEnabled = false
     private var deviceConnected = false
-    var hr = mutableStateOf(0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
+            val gameVM: GameVM = viewModel()
 
             api.setPolarFilter(false)
             api.setApiLogger { s: String -> Log.d(API_LOGGER_TAG, s) }
@@ -116,11 +118,13 @@ class MainActivity : ComponentActivity() {
 
                 override fun batteryLevelReceived(identifier: String, level: Int) {
                     Log.d(TAG, "BATTERY LEVEL: $level")
+                    gameVM.setBatteryLevel( level )
                 }
 
                 override fun hrNotificationReceived(identifier: String, data: PolarHrData) {
                     Log.d(TAG, "HR value: ${data.hr} rrsMs: ${data.rrsMs} rr: ${data.rrs} contact: ${data.contactStatus} , ${data.contactStatusSupported}")
-                    hr.value = data.hr
+//                    hr.value = data.hr
+                    gameVM.setHr(data.hr)
                 }
 
 
@@ -137,13 +141,15 @@ class MainActivity : ComponentActivity() {
             deviceHeightInPixels = displayMetrics.heightPixels
             deviceWidthInPixels = displayMetrics.widthPixels
 
+
+
             PolarMoveTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    StartPoint( api, hr.value, height, width )
+                    StartPoint( api, height, width, gameVM )
                 }
             }
         }

@@ -3,8 +3,10 @@ package com.example.polarmove
 import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -19,6 +21,8 @@ class GameVM: ViewModel() {
     var dashes = mutableStateOf(0)
     var score = mutableStateOf(0)
     var calories = mutableStateOf(2800)
+    var hr = mutableStateOf(0)
+    var batteryLevel = mutableStateOf(0)
 
     class Object(
         val x: Int = 0,
@@ -78,6 +82,13 @@ class GameVM: ViewModel() {
             .addOnFailureListener {
                 highScoreGames.value = emptyList()
             }
+    }
+
+    fun setHr( hrValue: Int ) {
+        hr.value = hrValue
+    }
+    fun setBatteryLevel( batteryReading: Int ){
+        batteryLevel.value = batteryReading
     }
 
     fun calorieCalculator(time: Int, hr_avg: Int, weight: Int, age: Int, gender: String) {
