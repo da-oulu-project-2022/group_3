@@ -26,6 +26,7 @@ import com.polar.sdk.api.model.PolarHrData
 import java.util.*
 
 
+
 var deviceHeightInPixels = 1920
 var deviceWidthInPixels = 1080
 var distanceBetweenObstacles = 1000
@@ -123,7 +124,6 @@ class MainActivity : ComponentActivity() {
 
                 override fun hrNotificationReceived(identifier: String, data: PolarHrData) {
                     Log.d(TAG, "HR value: ${data.hr} rrsMs: ${data.rrsMs} rr: ${data.rrs} contact: ${data.contactStatus} , ${data.contactStatusSupported}")
-//                    hr.value = data.hr
                     gameVM.setHr(data.hr)
                 }
 
@@ -140,7 +140,6 @@ class MainActivity : ComponentActivity() {
 
             deviceHeightInPixels = displayMetrics.heightPixels
             deviceWidthInPixels = displayMetrics.widthPixels
-
 
 
             PolarMoveTheme {

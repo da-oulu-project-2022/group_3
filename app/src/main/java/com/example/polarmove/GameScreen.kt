@@ -10,6 +10,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.OutlinedButton
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -53,6 +57,10 @@ fun GameScreen(
     jumpCycle: ArrayList<ImageBitmap>,
     crawlCycle: ArrayList<ImageBitmap>,
     roadObjects: ArrayList<ImageBitmap>,
+    backgroundObjects: ArrayList<ImageBitmap>,
+    cloudItems: ArrayList<ImageBitmap>,
+    greeneryObjects: ArrayList<ImageBitmap>,
+    manholeItem: ArrayList<ImageBitmap>,
     obstXposs: List<Int>
 ){
 
@@ -251,17 +259,32 @@ fun GameScreen(
 //    }
 
 
+//    val obstacleState by remember { mutableStateOf( ObstacleState( roadObjects = roadObjects, obstXposs = obstXposs) ) }
+//    val roadState by remember { mutableStateOf( RoadState() ) }
+//    val playerState by remember { mutableStateOf( PlayerState( walkCycle = walkCycle, jumpCycle = jumpCycle, crawlCycle = crawlCycle ) ) }
+//    val currentScore by gameState.currentScore.observeAsState()
+//    val highScore by gameState.highScore.observeAsState()
+
+
     val obstacleState by remember { mutableStateOf( ObstacleState( roadObjects = roadObjects, obstXposs = obstXposs) ) }
+    val bgItemsState by remember { mutableStateOf( BgItemsState( backgroundObjects = backgroundObjects ) ) }
+    val bgGreeneryItemsState by remember { mutableStateOf( BgGreeneryItemsState ( greeneryObjects = greeneryObjects ) ) }
+    val cloudState by remember { mutableStateOf( CloudState( cloudItems = cloudItems ) ) }
     val roadState by remember { mutableStateOf( RoadState() ) }
-    val playerState by remember { mutableStateOf( PlayerState( walkCycle = walkCycle, jumpCycle = jumpCycle, crawlCycle = crawlCycle ) ) }
+    val playerState by remember { mutableStateOf( PlayerState( walkCycle = walkCycle, crawlCycle = crawlCycle, jumpCycle = jumpCycle ) ) }
+    val manholeState by remember { mutableStateOf( ManholeState( manholeItem = manholeItem ) ) }
     val currentScore by gameState.currentScore.observeAsState()
     val highScore by gameState.highScore.observeAsState()
+
 
     if ( !gameState.isGameOver ) {
         gameState.increaseScore()
         obstacleState.moveDown()
+        bgItemsState.moveDown()
+        manholeState.moveDown()
+        bgGreeneryItemsState.moveDown()
+        cloudState.moveDown()
         playerState.move()
-
 
         obstacleState.obstacleList.forEach { obstacle ->
             if ( playerState.getBounds()
@@ -284,18 +307,6 @@ fun GameScreen(
             modifier = Modifier
                 .width((0.15 * deviceWidthInPixels).dp)
                 .fillMaxHeight()
-                .clickable(
-                    onClick = {
-                        if (!gameState.isGameOver) {
-                            playerState.moveRight()
-                        } else {
-                            roadState.initLane()
-                            obstacleState.initObstacle()
-                            playerState.playerInit()
-                            gameState.replay()
-                        }
-                    }
-                )
 //                .fillMaxHeight()
         ){
             Spacer(modifier = Modifier.height(500.dp))
@@ -332,7 +343,7 @@ fun GameScreen(
             }) {
                 Text("Crawl")
             }
-            HighScoreTextViews(requireNotNull(currentScore), requireNotNull(highScore))
+            HighScoreTextViews(requireNotNull(currentScore), requireNotNull(highScore), userVM )
             Text("HR: ${gameVM.hr.value}")
             Text("Battery: ${gameVM.batteryLevel.value}")
         }
@@ -359,7 +370,13 @@ fun GameScreen(
 //            HighScoreTextViews(requireNotNull(currentScore), requireNotNull(highScore))
             Canvas( modifier = Modifier ){
                 roadView( roadState )
+                roadBricks( obstacleState )
                 obstacleView( obstacleState )
+                manholeView( manholeState )
+                greeneryItemView( bgGreeneryItemsState )
+                backgroundItemView( bgItemsState )
+                greeneryItemView( bgGreeneryItemsState )
+                cloudView( cloudState )
                 playerView( playerState )
 //            drawImage( walk1, alpha = 1f, style = Fill, topLeft = Offset( x = playerState.xPos.toFloat(), y = playerState.yPos.toFloat()) )
             }
@@ -429,9 +446,193 @@ fun DrawScope.roadView( roadState: RoadState ) {
 }
 
 fun DrawScope.playerView( playerState: PlayerState ) {
-    drawImage( playerState.image, topLeft = Offset( x = playerState.xPos.toFloat(), y = playerState.yPos.toFloat()) )
-//    drawBoundingBox( Color.Red, playerState.getBounds())
+    drawImage(
+        playerState.image,
+        topLeft = Offset(x = playerState.xPos.toFloat(), y = playerState.yPos.toFloat())
+    )
 }
+
+//    val TAG = "MY-TAG"
+//
+//    var accDisposable: Disposable? = null
+//    var autoConnectDisposable: Disposable? = null
+//    val deviceId = "B5DED921"
+//
+//    var playerX by remember { mutableStateOf(967)}
+//    val playerY = 2650
+//
+//    fun moveLeft(){
+//        if( playerX >= 967 ) playerX -= 260
+//    }
+//    fun moveRight(){
+//        if ( playerX <= 967 ) playerX += 260
+//    }
+//
+//    val xPossibilities = listOf( 707, 967, 1227 )
+//
+//    Column(
+//        modifier = Modifier.fillMaxSize()
+//    ){
+//        OutlinedButton(onClick = { navControl.navigate("MainScreen") }) {
+//            Text(text = "Main screen")
+//        }
+//
+//        OutlinedButton(onClick = {
+//            if (autoConnectDisposable != null) {
+//                autoConnectDisposable?.dispose()
+//            }
+//            autoConnectDisposable = api.autoConnectToDevice(-60, "180D", null)
+//                .subscribe(
+//                    { Log.d(TAG, "auto connect search complete") },
+//                    { throwable: Throwable -> Log.e(TAG, "" + throwable.toString()) }
+//                )
+//        }) {
+//            Text(text = "Connect Sensor")
+//        }
+//
+//        OutlinedButton(onClick = {
+//            if (accDisposable == null) {
+//                accDisposable = api.requestStreamSettings(deviceId, PolarBleApi.DeviceStreamingFeature.ACC)
+//                    .toFlowable()
+//                    .flatMap { sensorSetting: PolarSensorSetting -> api.startAccStreaming(deviceId, sensorSetting.maxSettings()) }
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .subscribe(
+//                        { polarAccData: PolarAccelerometerData ->
+//                            Log.d(TAG, "ACC update")
+//                            for (data in polarAccData.samples) {
+//
+//                                Log.d("XXX ", data.x.toString())
+//                                Log.d("YYY ", data.y.toString())
+//                                if ( data.z < -200) {
+//                                    moveRight()
+//                                } else if ( data.z > 200 ){
+//                                    moveLeft()
+//                                }
+//                            }
+//                        },
+//                        { error: Throwable ->
+//                            Log.e(TAG, "Ecg stream failed $error")
+//                            accDisposable = null
+//                        },
+//                        {
+//                            Log.d(TAG, "Ecg stream complete")
+//                        }
+//                    )
+//            } else {
+//                // NOTE stops streaming if it is "running"
+//                accDisposable?.dispose()
+//                accDisposable = null
+//            }
+//        }) {
+//            Text(text = "Show acceleration")
+//        }
+//
+//        Text("HR: $hr")
+////        Text(horizontal)
+////        Text(vertical)
+//
+//        OutlinedButton(onClick = {
+////            Log.d("XXX ", listX.toString())
+////            Log.d("YYY ", listY.toString())
+//            accDisposable?.dispose()
+//        }) {
+//            Text(text = "Stop")
+//        }
+//
+//        OutlinedButton(onClick = {
+//            if ( playerX <= 967 ) playerX += 260
+//        }) {
+//            Text(text = "Move right")
+//        }
+//        OutlinedButton(onClick = {
+//            if( playerX >= 967 ) playerX -= 260
+//        }) {
+//            Text(text = "Move left")
+//        }
+//
+//    }
+
+    /////////////////////////////////////////////////////////////////////////////////
+
+
+
+fun DrawScope.manholeView( manholeState: ManholeState ) {
+    manholeState.manholeList.forEach { manhole ->
+        withTransform({
+//            scale( .8f, .8f)
+            translate( left = manhole.xPos.toFloat(), top = manhole.yPos.toFloat() )
+        }) {}
+    }
+}
+
+fun DrawScope.backgroundItemView( bgItemsState: BgItemsState ) {
+    bgItemsState.bgItemList.forEach { background ->
+        withTransform({
+//            scale( .8f, .8f)
+            translate( left = background.xPos.toFloat(), top = background.yPos.toFloat() )
+        }) {
+//            drawRect( color = Color.Red, size = Size( width = obstacle.size.toFloat(), height = obstacle.size.toFloat() ) )
+            drawImage( background.image )
+        }
+    }
+}
+fun DrawScope.greeneryItemView( greeneryItemsState: BgGreeneryItemsState ) {
+    greeneryItemsState.bgGreeneryItemList.forEach { greenery ->
+        withTransform({
+//            scale( .8f, .8f)
+            translate( left = greenery.xPos.toFloat(), top = greenery.yPos.toFloat() )
+        }) {
+//            drawRect( color = Color.Red, size = Size( width = obstacle.size.toFloat(), height = obstacle.size.toFloat() ) )
+            drawImage( greenery.image )
+        }
+    }
+}
+
+fun DrawScope.cloudView( cloudState: CloudState ) {
+    cloudState.cloudList.forEach { clouds ->
+        withTransform({
+//            scale( .8f, .8f)
+            translate( left = clouds.xPos.toFloat(), top = clouds.yPos.toFloat() )
+        }) {
+//            drawRect( color = Color.Red, size = Size( width = obstacle.size.toFloat(), height = obstacle.size.toFloat() ) )
+            drawImage( clouds.image )
+        }
+    }
+}
+
+
+fun DrawScope.roadBricks( obstacleState: ObstacleState ) {
+    obstacleState.obstacleList.forEach { obstacle ->
+            // Brick work
+            drawLine(
+                color = Color.LightGray,
+                start = Offset(
+                    x = (deviceWidthInPixels.toFloat() * 0.99).toFloat(),
+                    y = obstacle.yPos.toFloat() + 2000
+                ),
+                end = Offset(
+                    x = (deviceWidthInPixels.toFloat() / 2.27).toFloat(),
+                    y = obstacle.yPos.toFloat() + 2000
+                ),
+                strokeWidth = 10f
+            )
+
+            drawLine(
+                color = Color.LightGray,
+                start = Offset(
+                    x = (deviceWidthInPixels.toFloat() * 0.99).toFloat(),
+                    y = obstacle.yPos.toFloat() - 2000
+                ),
+                end = Offset(
+                    x = (deviceWidthInPixels.toFloat() / 2.27).toFloat(),
+                    y = obstacle.yPos.toFloat() - 2000
+                ),
+                strokeWidth = 10f
+            )
+        }
+    }
+
+
 
 fun DrawScope.drawBoundingBox(color: Color, rect: Rect ) {
         drawRect(color, rect.topLeft, rect.size, style = Stroke(3f))
@@ -448,20 +649,15 @@ fun DrawScope.drawBoundingBox(color: Color, rect: Rect ) {
 
 
 @Composable
-fun HighScoreTextViews(currentScore: Int, highScore: Int)
-{
-//    Spacer(modifier = Modifier.padding(top = 50.dp))
+fun HighScoreTextViews(currentScore: Int, highScore: Int, userVM: UserVM) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth().background(color = Color.Black)
             .padding(start = 20.dp),
         horizontalArrangement = Arrangement.Start
     ) {
-        Text(text = "Score")
-//        Spacer(modifier = Modifier.padding(start = 10.dp))
-//        Text(
-//            text = "$highScore".padStart(5, '0')
-//        )
+        Text(text = "Username: ${userVM.userData.username}")
+        Spacer(modifier = Modifier.padding(start = 10.dp))
         Spacer(modifier = Modifier.padding(start = 10.dp))
         Text(
             text = "$currentScore".padStart(5, '0')

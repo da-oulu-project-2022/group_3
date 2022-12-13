@@ -11,23 +11,17 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.graphics.drawable.toDrawable
-import kotlinx.coroutines.Delay
-import kotlinx.coroutines.delay
 
 class PlayerState(
     var xPos: Int = 0,
     var yPos: Int = 0,
     var zLevel: Int = 0,
     var keyframe: Int = 0,
-//    var walk1: ImageBitmap,
-//    var walk2: ImageBitmap,
-//    private var bitMapList: ArrayList<ImageBitmap> = arrayListOf(),
     var walkCycle: ArrayList<ImageBitmap>,
     var jumpCycle: ArrayList<ImageBitmap>,
     var crawlCycle: ArrayList<ImageBitmap>,
     var isJumping: Boolean = false,
     var isCrawling: Boolean = false,
-//    val pos1: Int = deviceWidthInPixels - (distanceBetweenLines + deviceWidthInPixels * 0.2 + deviceWidthInPixels * 0.01).toInt(),
     var playerPositionScale: Double = if ( deviceWidthInPixels > 1080 ) 0.44 else 0.60,
     val pos1: Int = ( playerPositionScale * deviceWidthInPixels - (distanceBetweenLines + deviceWidthInPixels * 0.2 + deviceWidthInPixels * 0.01)).toInt(),
     val pos2: Int = pos1 - (distanceBetweenLines + deviceWidthInPixels * 0.16 + deviceWidthInPixels * 0.02 ).toInt(),
@@ -53,8 +47,6 @@ class PlayerState(
         }
 
     init {
-//        bitMapList.add( walk1 )
-//        bitMapList.add( walk2 )
         playerInit()
     }
 
@@ -72,14 +64,16 @@ class PlayerState(
     }
 
     fun changeKeyframe() {
-        keyframe ++
-        if ( isJumping && keyframe == 76 ) {
+        keyframe++
+        if (isJumping && keyframe == 76) {
             isJumping = false
             keyframe = 0
-        } else if ( !isJumping && !isCrawling && keyframe == 20 ){
+        } else if (!isJumping && !isCrawling && keyframe == 20) {
             keyframe = 0
-        } else if ( isCrawling && keyframe == 40) {
-            keyframe = 0
+        } else if (isCrawling && keyframe == 40) {
+            if (keyframe == 20) {
+                keyframe = 0
+            }
         }
     }
 
