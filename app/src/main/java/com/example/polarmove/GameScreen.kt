@@ -1,6 +1,5 @@
 package com.example.polarmove
 
-import android.text.Selection.moveDown
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,8 +34,9 @@ fun GameScreen(
     walkCycle: ArrayList<ImageBitmap>,
     roadObjects: ArrayList<ImageBitmap>,
     backgroundObjects: ArrayList<ImageBitmap>,
-    cloudItems: ArrayList<ImageBitmap>
-
+    cloudItems: ArrayList<ImageBitmap>,
+    greeneryObjects: ArrayList<ImageBitmap>,
+    manholeItem: ArrayList<ImageBitmap>
 ){
 
 //    val TAG = "MY-TAG"
@@ -163,17 +163,22 @@ fun GameScreen(
 
 
     val obstacleState by remember { mutableStateOf( ObstacleState( roadObjects = roadObjects) ) }
-    val bgItemsState by remember { mutableStateOf( bgItemsState( backgroundObjects = backgroundObjects ) ) }
-    val cloudState by remember { mutableStateOf( cloudState( cloudItems = cloudItems ) ) }
+    val bgItemsState by remember { mutableStateOf( BgItemsState( backgroundObjects = backgroundObjects ) ) }
+    val bgGreeneryItemsState by remember { mutableStateOf( BgGreeneryItemsState ( greeneryObjects = greeneryObjects ) ) }
+    val cloudState by remember { mutableStateOf( CloudState( cloudItems = cloudItems ) ) }
     val roadState by remember { mutableStateOf( RoadState() ) }
     val playerState by remember { mutableStateOf( PlayerState( walkCycle = walkCycle ) ) }
+    val manholeState by remember { mutableStateOf( ManholeState( manholeItem = manholeItem ) ) }
     val currentScore by gameState.currentScore.observeAsState()
     val highScore by gameState.highScore.observeAsState()
+
 
     if ( !gameState.isGameOver ) {
         gameState.increaseScore()
         obstacleState.moveDown()
         bgItemsState.moveDown()
+        manholeState.moveDown()
+        bgGreeneryItemsState.moveDown()
         cloudState.moveDown()
         playerState.run()
 
@@ -201,7 +206,9 @@ fun GameScreen(
                     } else {
                         roadState.initLane()
                         obstacleState.initObstacle()
+                        manholeState.initManhole()
                         bgItemsState.initBgItems()
+                        bgGreeneryItemsState.initBgGreeneryItems()
                         playerState.playerInit()
                         gameState.replay()
                     }
@@ -214,7 +221,10 @@ fun GameScreen(
             roadView( roadState )
             roadBricks( obstacleState )
             obstacleView( obstacleState )
+            manholeView( manholeState )
+            greeneryItemView( bgGreeneryItemsState )
             backgroundItemView( bgItemsState )
+            greeneryItemView( bgGreeneryItemsState )
             cloudView( cloudState )
             playerView( playerState )
 //            drawImage( walk1, alpha = 1f, style = Fill, topLeft = Offset( x = playerState.xPos.toFloat(), y = playerState.yPos.toFloat()) )
@@ -238,7 +248,16 @@ fun DrawScope.obstacleView( obstacleState: ObstacleState ) {
     }
 }
 
-fun DrawScope.backgroundItemView( bgItemsState: bgItemsState ) {
+fun DrawScope.manholeView( manholeState: ManholeState ) {
+    manholeState.manholeList.forEach { manhole ->
+        withTransform({
+//            scale( .8f, .8f)
+            translate( left = manhole.xPos.toFloat(), top = manhole.yPos.toFloat() )
+        }) {}
+    }
+}
+
+fun DrawScope.backgroundItemView( bgItemsState: BgItemsState ) {
     bgItemsState.bgItemList.forEach { background ->
         withTransform({
 //            scale( .8f, .8f)
@@ -249,8 +268,19 @@ fun DrawScope.backgroundItemView( bgItemsState: bgItemsState ) {
         }
     }
 }
+fun DrawScope.greeneryItemView( greeneryItemsState: BgGreeneryItemsState ) {
+    greeneryItemsState.bgGreeneryItemList.forEach { greenery ->
+        withTransform({
+//            scale( .8f, .8f)
+            translate( left = greenery.xPos.toFloat(), top = greenery.yPos.toFloat() )
+        }) {
+//            drawRect( color = Color.Red, size = Size( width = obstacle.size.toFloat(), height = obstacle.size.toFloat() ) )
+            drawImage( greenery.image )
+        }
+    }
+}
 
-fun DrawScope.cloudView( cloudState: cloudState ) {
+fun DrawScope.cloudView( cloudState: CloudState ) {
     cloudState.cloudList.forEach { clouds ->
         withTransform({
 //            scale( .8f, .8f)

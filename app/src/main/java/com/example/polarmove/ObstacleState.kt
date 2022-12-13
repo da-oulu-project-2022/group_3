@@ -10,7 +10,7 @@ data class ObstacleState(
     val obst1: Int = deviceWidthInPixels - (distanceBetweenLines + deviceWidthInPixels * 0.16 + deviceWidthInPixels * 0.01).toInt(),
     val obst2: Int = obst1 - (distanceBetweenLines + deviceWidthInPixels * 0.16 + deviceWidthInPixels * 0.02 ).toInt(),
     val obst3: Int = obst2 - (distanceBetweenLines + deviceWidthInPixels * 0.16 + deviceWidthInPixels * 0.02 ).toInt(),
-    val obstXposs: List<Int> = listOf(obst1,  obst2, obst3)
+    val obstXposs: List<Int> = listOf( obst1, obst2, obst3 )
 ) {
 
     init {
@@ -40,7 +40,7 @@ data class ObstacleState(
 
     fun moveDown() {
         obstacleList.forEach { obstacle ->
-            obstacle.yPos += obstacleSpeed * 3
+            obstacle.yPos += obstacleSpeed * 5
             Log.d("OBSTACLE Y", obstacle.yPos.toString())
         }
         val imageCount = (0..5)
@@ -59,7 +59,7 @@ data class ObstacleState(
 
     }
 
-    fun nextObstacleY(lastY: Int): Int
+    private fun nextObstacleY(lastY: Int): Int
     {
         var nextY = lastY - distanceBetweenObstacles
         return nextY
@@ -83,4 +83,76 @@ data class ObstacleModel(
             bottom = (yPos + image.height).toFloat()
         )
     }
+}
+
+data class ManholeState(
+    val manholeList: ArrayList<ManholeModel> = ArrayList(),
+    var manholeItem: ArrayList<ImageBitmap>,
+    val obst1: Int = deviceWidthInPixels - (distanceBetweenLines + deviceWidthInPixels * 0.16 + deviceWidthInPixels * 0.01).toInt(),
+    val obst2: Int = obst1 - (distanceBetweenLines + deviceWidthInPixels * 0.16 + deviceWidthInPixels * 0.02 ).toInt(),
+    val obst3: Int = obst2 - (distanceBetweenLines + deviceWidthInPixels * 0.16 + deviceWidthInPixels * 0.02 ).toInt(),
+    val obstXposs: List<Int> = listOf( obst1, obst2, obst3 )
+) {
+
+    init {
+        initManhole()
+        Log.d("MESSAGE", "SSSSSSSS")
+    }
+
+     fun initManhole() {
+        manholeList.clear()
+        var startY = -200
+        var obstacleCount = 2
+        val imageCount = (0..1)
+
+        for ( i in 0 until obstacleCount ) {
+            val count = (0..2)
+            val manhole = ManholeModel(
+//                xPos = xPossibilities[(0..2).random()],
+                xPos = obstXposs[count.random()],
+                yPos = startY,
+                image = manholeItem[imageCount.random()]
+            )
+            manholeList.add(manhole)
+
+            startY -= distanceBetweenObstacles
+        }
+    }
+
+    fun moveDown() {
+        manholeList.forEach { manhole ->
+            manhole.yPos += obstacleSpeed * 5
+            Log.d("Manhole Y", manhole.yPos.toString())
+        }
+        val imageCount = (0..1)
+        val count = (0..2)
+
+        if ( manholeList.first().yPos >= deviceHeightInPixels + 100 ) {
+            manholeList.removeAt(0)
+            val manhole = ManholeModel(
+//                xPos = xPossibilities[(0..2).random()],
+                xPos = obstXposs[count.random()],
+                yPos = nextManholeY(manholeList.last().yPos),
+                image = manholeItem[imageCount.random()]
+            )
+            manholeList.add(manhole)
+        }
+
+    }
+
+    fun nextManholeY(lastY: Int): Int
+    {
+        var nextY = lastY - distanceBetweenObstacles
+        return nextY
+    }
+
+}
+
+data class ManholeModel(
+    var xPos: Int,
+    var yPos: Int,
+    var zLevel: Int = 1,
+    var image: ImageBitmap
+//    var size: Int = (deviceWidthInPixels * 0.16).toInt()
+) {
 }

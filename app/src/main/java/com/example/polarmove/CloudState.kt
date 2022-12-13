@@ -3,12 +3,12 @@ package com.example.polarmove
 import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap
 
-data class cloudState(
+data class CloudState(
     val cloudList: ArrayList<CloudModel> = ArrayList(),
     var cloudItems: ArrayList<ImageBitmap>,
-    val obst1: Int = deviceWidthInPixels - (distanceBetweenLines + deviceWidthInPixels * 0.16 + deviceWidthInPixels * 0.01).toInt(),
-    val obst2: Int = obst1 - (distanceBetweenLines + deviceWidthInPixels * 0.16 + deviceWidthInPixels * 0.02 ).toInt(),
-    val obst3: Int = obst2 - (distanceBetweenLines + deviceWidthInPixels * 0.16 + deviceWidthInPixels * 0.02 ).toInt(),
+    val obst1: Int = deviceWidthInPixels - (distanceBetweenLines + deviceWidthInPixels * 0.16 + deviceWidthInPixels * 0.18).toInt(),
+    val obst2: Int = obst1 - (distanceBetweenLines + deviceWidthInPixels * 0.16 + deviceWidthInPixels * 0.15 ).toInt(),
+    val obst3: Int = obst2 - (distanceBetweenLines + deviceWidthInPixels * 0.16 + deviceWidthInPixels * 0.12 ).toInt(),
     val obstXposs: List<Int> = listOf(obst1,  obst2, obst3)
 ) {
 
@@ -19,38 +19,39 @@ data class cloudState(
 
     fun initClouds() {
         cloudList.clear()
-        var startY = -200
-        var obstacleCount = 4
-        val imageCount = (0..5)
+        var startX = -1500
+        var obstacleCount = 9
+        val imageCount = (0..3)
 
         for ( i in 0 until obstacleCount ) {
             val count = (0..2)
             val clouds = CloudModel(
+
 //                xPos = xPossibilities[(0..2).random()],
-                xPos = obstXposs[count.random()],
-                yPos = startY,
+                xPos = startX,
+                yPos = obstXposs[count.random()],
                 image = cloudItems[imageCount.random()]
             )
             cloudList.add(clouds)
 
-            startY += distanceBetweenObstacles
+            startX += 500
         }
     }
 
     fun moveDown() {
         cloudList.forEach { clouds ->
-            clouds.yPos += obstacleSpeed * 3
-            Log.d("Cloud Y", clouds.yPos.toString())
+            clouds.xPos += obstacleSpeed * 3
+            Log.d("Cloud X", clouds.xPos.toString())
         }
-        val imageCount = (0..5)
+        val imageCount = (0..3)
         val count = (0..2)
 
-        if ( cloudList.first().yPos >= deviceWidthInPixels - 100 ) {
+        if ( cloudList.first().xPos >= deviceWidthInPixels + 60 ) {
             cloudList.removeAt(0)
             val clouds = CloudModel(
 //                xPos = xPossibilities[(0..2).random()],
-                xPos = obstXposs[count.random()],
-                yPos = nextObstacleY(cloudList.last().yPos),
+                xPos = nextObstacleY(cloudList.last().xPos),
+                yPos = obstXposs[count.random()],
                 image = cloudItems[imageCount.random()]
             )
             cloudList.add(clouds)
@@ -60,7 +61,7 @@ data class cloudState(
 
     fun nextObstacleY(lastY: Int): Int
     {
-        var nextY = lastY - distanceBetweenObstacles
+        var nextY = lastY - 1500
         return nextY
     }
 

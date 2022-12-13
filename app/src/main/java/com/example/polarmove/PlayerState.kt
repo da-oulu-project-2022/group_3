@@ -23,7 +23,7 @@ class PlayerState(
     var walkCycle: ArrayList<ImageBitmap>,
     var isJumping: Boolean = false,
     var isCrawling: Boolean = false,
-    val pos1: Int = deviceWidthInPixels - (distanceBetweenLines + deviceWidthInPixels * 0.25 + deviceWidthInPixels * 0.01).toInt(),
+    val pos1: Int = deviceWidthInPixels - (distanceBetweenLines + deviceWidthInPixels * 0.18 + deviceWidthInPixels * 0.01).toInt(),
     val pos2: Int = pos1 - (distanceBetweenLines + deviceWidthInPixels * 0.16 + deviceWidthInPixels * 0.02 ).toInt(),
     val pos3: Int = pos2 - (distanceBetweenLines + deviceWidthInPixels * 0.16 + deviceWidthInPixels * 0.02 ).toInt()
 ) {
@@ -41,7 +41,7 @@ class PlayerState(
     fun playerInit(){
 //        xPos = 0
         xPos = pos2
-        yPos = (deviceHeightInPixels - (deviceHeightInPixels * 0.26 + distanceBetweenLines * 3)).toInt()
+        yPos = (deviceHeightInPixels - (deviceHeightInPixels * 0.15 + distanceBetweenLines * 3)).toInt()
         zLevel = 0
         isJumping = false
         isCrawling = false
