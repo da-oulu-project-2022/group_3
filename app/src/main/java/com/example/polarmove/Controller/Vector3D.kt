@@ -25,6 +25,11 @@ class Vector3D {
         y=o.y
         z=o.z
     }
+    constructor(o:DoubleArray){
+        x=o[0]
+        y=o[1]
+        z=o[2]
+    }
 
     val values= doubleArrayOf(0.0,0.0,0.0)
 

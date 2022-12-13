@@ -15,7 +15,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,8 +29,11 @@ import com.polar.sdk.api.model.PolarSensorSetting
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlin.math.pow
-import kotlin.math.sqrt
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class PolarController {
 
@@ -44,12 +46,11 @@ class PolarController {
 
     private val accelValuesArray = mutableStateOf(mutableListOf(intArrayOf(0,0,0)))
     private val accelSumArray = mutableStateOf(intArrayOf(0,0,0))
-    private val isInPut = mutableStateOf(false)
 
 
     private var sensetivity=300 //Accel in mG
     private var baseline = 1000 //Accel in mG
-    private var inputDelay=200 //time in ms
+    private var inputCooldownTime=200 //time in ms
 
     //https://developer.android.com/kotlin/flow/stateflow-and-sharedflow
     //val inputChange: MutableStateFlow<Boolean> = MutableStateFlow<Boolean>(false)
@@ -65,7 +66,8 @@ class PolarController {
     private val _inputDown: MutableStateFlow<Boolean> = MutableStateFlow<Boolean>(false)
     val inputDown = _inputDown.asStateFlow()
 
-
+    private val _rawData: MutableStateFlow<IntArray> = MutableStateFlow<IntArray>(intArrayOf(0,0,0))
+    val rawData = _rawData.asStateFlow()
 
 
     val connectionStateText = mutableStateOf("text")
@@ -90,13 +92,8 @@ class PolarController {
                 Log.w(TAG, "Bluetooth off")
             }
         }
-
         api = PolarBleApiDefaultImpl.defaultImplementation(applicationContext, PolarBleApi.ALL_FEATURES)
-
-        //api = apy
-
         mySetup()
-
     }
 
     private fun mySetup(){
@@ -122,42 +119,35 @@ class PolarController {
         }
         )
         Log.d(TAG,"Setup complete")
-        //api.connectToDevice(deviceId)
-
     }
 
     public fun connectToDevice(id:String){
-
         if(!connected){
-
             deviceId = id
 
-            try {
-                connected = true
+            connected = try {
                 api.connectToDevice(id)
-
+                true
             } catch (polarInvalidArgument: PolarInvalidArgument) {
                 val attempt = "connection Failed"
-
                 Log.e(TAG, "Failed to $attempt. Reason $polarInvalidArgument ")
-
-                connected = false
-
+                false
             }
         }
     }
 
-    public fun startStream(){
+    public fun startStream():Boolean{
+        if (!connected){
+            return false;
+        }
         api.requestStreamSettings(deviceId, PolarBleApi.DeviceStreamingFeature.ACC).toFlowable().flatMap {
                 settings:PolarSensorSetting -> api.startAccStreaming(deviceId, settings)}
             .observeOn(AndroidSchedulers.mainThread()).subscribe(
                 {
                     Log.d(TAG,"Message received")
                     onAccelReceive(it)
-
                 },
                 { error: Throwable ->
-                    //toggleButtonUp(accButton, R.string.start_acc_stream)
                     Log.e(TAG, "ACC stream failed. Reason $error")
                 },
                 {
@@ -166,18 +156,16 @@ class PolarController {
                 }
             )
         Log.d(TAG,"Subscribed")
+        return true
     }
     private fun accelButtonOnClick(){
-
         api.requestStreamSettings(deviceId, PolarBleApi.DeviceStreamingFeature.ACC).toFlowable().flatMap {
                 settings:PolarSensorSetting -> api.startAccStreaming(deviceId, settings)}
             .observeOn(AndroidSchedulers.mainThread()).subscribe(
                 {
                     onAccelReceive(it)
-
                 },
                 { error: Throwable ->
-                    //toggleButtonUp(accButton, R.string.start_acc_stream)
                     Log.e(TAG, "ACC stream failed. Reason $error")
                 },
                 {
@@ -187,41 +175,31 @@ class PolarController {
             )
     }
 
-    private val lastFullSegment= mutableStateOf(Vector3D())
+    private val _fullSegment: MutableStateFlow<IntArray> = MutableStateFlow<IntArray>(intArrayOf(0,0,0))
+    val fullSegment = _fullSegment.asStateFlow()
+
     private val currentSegmentVector3d = Vector3D()
     private var currentSegmentSamples=0
     private val maxSegmentSize=5
     private val lastPackageAverage=Vector3D()
 
+    private val _lastSegmentsList = mutableStateListOf<Vector3D>(Vector3D())
+    private val lastSegmentsList:List<Vector3D> = _lastSegmentsList
+
     private fun onAccelReceive(polarAccelerometerData: PolarAccelerometerData){
 
         accelValuesArray.value.clear()
+        _lastSegmentsList.clear()
 
         for (data in polarAccelerometerData.samples) {
 
+            _rawData.value = intArrayOf(data.x,data.y,data.z)
             currentSegmentVector3d.add(data.x, data.y, data.z)
             lastPackageAverage.add(data.x, data.y, data.z)
             currentSegmentSamples++
+
             if (currentSegmentSamples >= maxSegmentSize) {
-                currentSegmentVector3d /= maxSegmentSize
-                Log.d(
-                    TAG_DATA,
-                    "X: ${currentSegmentVector3d.x} Y: ${currentSegmentVector3d.y} Z: ${currentSegmentVector3d.z} "
-                )
-
-                CheckIfValidInput(currentSegmentVector3d)
-
-                if (currentSegmentVector3d.length() < baseline - sensetivity || currentSegmentVector3d.length() > baseline + sensetivity) {
-                    _inputLeft.value = true
-                    Log.d(TAG_DATA, "true")
-                } else {
-                    _inputLeft.value = false
-                    Log.d(TAG_DATA, "false")
-                }
-
-                lastFullSegment.value = currentSegmentVector3d
-                currentSegmentVector3d.clear()
-                currentSegmentSamples = 0
+                processFullSegment()
             }
 
             accelValuesArray.value.add(intArrayOf(data.x, data.y, data.z))
@@ -230,54 +208,109 @@ class PolarController {
         accelSumArray.value = lastPackageAverage.toIntArray()
     }
 
-    val down = Vector3D(0,0,1000)
+    private fun processFullSegment(){
 
-    fun CheckIfValidInput(input: Vector3D){
+        currentSegmentVector3d /= maxSegmentSize
+        Log.d(
+            TAG_DATA,
+            "X: ${currentSegmentVector3d.x} Y: ${currentSegmentVector3d.y} Z: ${currentSegmentVector3d.z} "
+        )
+
+        CheckIfValidInput(currentSegmentVector3d)
+
+        _fullSegment.value = currentSegmentVector3d.toIntArray()
+        _lastSegmentsList.add(Vector3D(currentSegmentVector3d))
+
+        currentSegmentVector3d.clear()
+        currentSegmentSamples = 0
+
+    }
+
+    var inputOnCooldown = false
+    private suspend fun inputCooldown(){
+        delay(inputCooldownTime.toLong())
+        inputOnCooldown = false
+    }
+    private fun CheckIfValidInput(input: Vector3D){
 
         Log.d(TAG_DATA,"Before rotation "+ printInput(input))
 
         Log.d(TAG_DATA,"Rotate by ${offsetRotation[0]} ${offsetRotation[1]} ${offsetRotation[2]}")
         input.rotate(offsetRotation)
+        _lastSegmentsList.add(Vector3D(input))
         Log.d(TAG_DATA,"After rotation "+printInput(input))
 
-        _inputRight.value = input.x>sensetivity
-        _inputLeft.value = input.x<-sensetivity
-        _inputUp.value = input.z>sensetivity+baseline
-        _inputDown.value = input.x<-sensetivity+baseline
+        checkInputDirection(_inputRight,input.x,sensetivity)
+        checkInputDirection(_inputLeft,input.x,-sensetivity)
+        checkInputDirection(_inputUp,input.z,(sensetivity+baseline))
+        checkInputDirection(_inputDown,input.z,-(sensetivity+baseline))
 
-        //if (input)
+        /*
+        _inputLeft.value = input.x < -sensetivity
+        _inputUp.value = input.z > sensetivity + baseline
+        _inputDown.value = input.x < -sensetivity + baseline
+        */
     }
 
-    fun printInput(vector3D: Vector3D): String {
+    private fun checkInputDirection(direction: MutableStateFlow<Boolean>,input: Double,sens:Int) {
+        if (inputOnCooldown) {
+            return
+        }
+        if (input > sens) {
+            direction.value = true
+        } else {
+            direction.value = true
+        }
+        inputOnCooldown = true
+        GlobalScope.launch { inputCooldown() }
+    }
+
+    private fun printInput(vector3D: Vector3D): String {
         return "X: ${vector3D.x} Y: ${vector3D.y} Z: ${vector3D.z}"
     }
 
-    private val downVector3D=Vector3D(0,0,1000)
+    private val downVector3D=Vector3D(0,0,1)
     private val offset=Vector3D()
     private var offsetRotation = doubleArrayOf(0.0,0.0,0.0)
+
+    val TAG_CALIBRATION = "Calibration"
 
     public fun CalibrateSensor(){
         offset.set(lastPackageAverage)
         offsetRotation=offset.rotationFrom(downVector3D)
+        Log.d(TAG_CALIBRATION, "rotation is "+ printInput(Vector3D(offsetRotation)))
     }
 
-    val dummy=Vector3D()
     @Composable
     fun AccelDataDisplay() {
-        val theValues by accelSumArray
+        val theValues = lastSegmentsList
+        val fS = 10
+        var i =0
+            Row {
+        while (i<theValues.size){
+                if (i%2==0)
+                    Column {
 
-        dummy.set(theValues)
-        Row {
-            Column {
+                        Text("X: ${theValues[i].x.toInt()}", fontSize = fS.sp)
+                        Text("Y: ${theValues[i].y.toInt()}", fontSize = fS.sp)
+                        Text("Z: ${theValues[i].z.toInt()}", fontSize = fS.sp)
+                        Text("Sum: ${theValues[i].length().toInt()}", fontSize = fS.sp)
 
-                Text("X: ${theValues[0]}")
-                Text("Y: ${theValues[1]}")
-                Text("Z: ${theValues[2]}")
-                Text("Sum: ${dummy.length()}")
-
-                Text("Is Input: ")
-
-
+                    }
+            i++
+            }
+        }
+        i=0
+            Row {
+        while (i<theValues.size){
+                if (i%2==1)
+                    Column {
+                        Text(text = "X: ${theValues[i].x.toInt()}", fontSize = fS.sp)
+                        Text("Y: ${theValues[i].y.toInt()}", fontSize = fS.sp)
+                        Text("Z: ${theValues[i].z.toInt()}", fontSize = fS.sp)
+                        Text("Sum: ${theValues[i].length().toInt()}", fontSize = fS.sp)
+                    }
+            i++
             }
         }
     }
@@ -285,8 +318,6 @@ class PolarController {
     @Composable
     fun ConnectionStatusText() {
         val myText by connectionStateText
-        // or
-        //val myText by text.collectAsState()
         Text(myText)
     }
 
