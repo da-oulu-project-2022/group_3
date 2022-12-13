@@ -92,9 +92,9 @@ class PlayerState(
     }
 
     fun jump() {
+        isCrawling = false
         isJumping = true
         keyframe = 0
-//        changeKeyframe()
     }
 
     fun crawl() {
