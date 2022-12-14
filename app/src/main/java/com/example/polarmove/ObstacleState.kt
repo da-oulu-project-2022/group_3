@@ -90,7 +90,7 @@ data class ManholeState(
 
     init {
         initManhole()
-        Log.d("MESSAGE", "SSSSSSSS")
+//        Log.d("MESSAGE", "SSSSSSSS")
     }
 
      fun initManhole() {

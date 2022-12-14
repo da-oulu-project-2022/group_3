@@ -12,12 +12,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.firscomposeapp.PolarController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.polar.sdk.api.PolarBleApi
 
 @Composable
-fun StartPoint( api: PolarBleApi, height: Int, width: Int, gameVM: GameVM ){
+fun StartPoint( api: PolarBleApi, height: Int, width: Int, gameVM: GameVM, controller: PolarController ){
 
 
 
@@ -291,7 +292,7 @@ fun StartPoint( api: PolarBleApi, height: Int, width: Int, gameVM: GameVM ){
     val obst1: Int = (obstaclePositionScale * deviceWidthInPixels - ( deviceWidthInPixels * 0.19 + deviceWidthInPixels * 0.01)).toInt()
     val obst2: Int = obst1 - (distanceBetweenLines + deviceWidthInPixels * 0.16 + deviceWidthInPixels * 0.02 ).toInt()
     val obst3: Int = obst2 - (distanceBetweenLines + deviceWidthInPixels * 0.16 + deviceWidthInPixels * 0.02 ).toInt()
-    val obstXposs: List<Int> = listOf(obst1,  obst2, obst3)
+    val obstXposs: List<Int> = listOf(obst1,  obst2, obst3);
 
 //    Log.d( "HEIGHT", deviceHeightInPixels.toString())
 //    Log.d("Width", deviceWidthInPixels.toString())
@@ -349,7 +350,7 @@ fun StartPoint( api: PolarBleApi, height: Int, width: Int, gameVM: GameVM ){
                 MainScreen( navControl, userVM, auth, scState )
             }
             composable( route = "GameScreen"){
-                GameScreen(navControl, userVM, gameVM, api, height, width, GameState(), walkCycle, jumpCycle, crawlCycle, roadObjects, backgroundObjects, cloudItems, greeneryObjects, manholeItem, obstXposs )
+                GameScreen(navControl, userVM, gameVM, api, height, width, GameState(), walkCycle, jumpCycle, crawlCycle, roadObjects, backgroundObjects, cloudItems, greeneryObjects, manholeItem, obstXposs, controller )
             }
             composable( route = "UserInfo"){
                 UserInfo( navControl, userVM, scState )

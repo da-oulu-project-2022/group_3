@@ -36,10 +36,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
+import com.example.firscomposeapp.PolarController
 import com.polar.sdk.api.PolarBleApiCallback
 import com.polar.sdk.api.model.PolarDeviceInfo
 import com.polar.sdk.api.model.PolarHrData
 import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -61,18 +65,22 @@ fun GameScreen(
     cloudItems: ArrayList<ImageBitmap>,
     greeneryObjects: ArrayList<ImageBitmap>,
     manholeItem: ArrayList<ImageBitmap>,
-    obstXposs: List<Int>
+    obstXposs: List<Int>,
+    controller: PolarController
 ){
 
     val TAG = "MY-TAG"
 //
     var accDisposable: Disposable? = null
     var autoConnectDisposable: Disposable? = null
-//    var deviceId = "B5DED921"
+    var deviceId = "B5DED921"
+
+    var bluetoothEnabled = false
+    var deviceConnected = false
 //
-//    var bluetoothEnabled = false
-//    var deviceConnected = false
-//
+
+
+
 //
 //
 //    api.setApiCallback(object : PolarBleApiCallback() {
@@ -174,42 +182,8 @@ fun GameScreen(
 //            Text(text = "Connect Sensor")
 //        }
 //
-//        OutlinedButton(onClick = {
-//            if (accDisposable == null) {
-//                accDisposable = api.requestStreamSettings(deviceId, PolarBleApi.DeviceStreamingFeature.ACC)
-//                    .toFlowable()
-//                    .flatMap { sensorSetting: PolarSensorSetting -> api.startAccStreaming(deviceId, sensorSetting.maxSettings()) }
-//                    .observeOn(AndroidSchedulers.mainThread())
-//                    .subscribe(
-//                        { polarAccData: PolarAccelerometerData ->
-//                            Log.d(TAG, "ACC update")
-//                            for (data in polarAccData.samples) {
-//
-//                                Log.d("XXX ", data.x.toString())
-//                                Log.d("YYY ", data.y.toString())
-//                                if ( data.z < -200) {
-//                                    moveRight()
-//                                } else if ( data.z > 200 ){
-//                                    moveLeft()
-//                                }
-//                            }
-//                        },
-//                        { error: Throwable ->
-//                            Log.e(TAG, "Ecg stream failed $error")
-//                            accDisposable = null
-//                        },
-//                        {
-//                            Log.d(TAG, "Ecg stream complete")
-//                        }
-//                    )
-//            } else {
-//                // NOTE stops streaming if it is "running"
-//                accDisposable?.dispose()
-//                accDisposable = null
-//            }
-//        }) {
-//            Text(text = "Show acceleration")
-//        }
+
+
 //
 //        Text("HR: $hr")
 ////        Text(horizontal)
@@ -276,6 +250,17 @@ fun GameScreen(
     val currentScore by gameState.currentScore.observeAsState()
     val highScore by gameState.highScore.observeAsState()
 
+    LaunchedEffect( playerState  ) {
+        GlobalScope.launch {
+            controller.inputLeft.collect{
+                if(it) {
+                    playerState.moveLeft()
+                }
+            }
+        }
+    }
+
+
 
     if ( !gameState.isGameOver ) {
         gameState.increaseScore()
@@ -310,19 +295,28 @@ fun GameScreen(
 //                .fillMaxHeight()
         ){
             Spacer(modifier = Modifier.height(500.dp))
-            OutlinedButton(onClick = {
-                if (autoConnectDisposable != null) {
-                    autoConnectDisposable?.dispose()
-                }
-                autoConnectDisposable = api.autoConnectToDevice(-60, "180D", null)
-                    .subscribe(
-                        { Log.d(TAG, "auto connect search complete") },
-                        { throwable: Throwable -> Log.e(TAG, "" + throwable.toString()) }
-                    )
-                }
-            ) {
-                Text(text = "Connect Sensor")
+//            OutlinedButton(onClick = {
+//                if (autoConnectDisposable != null) {
+//                    autoConnectDisposable?.dispose()
+//                }
+//                autoConnectDisposable = api.autoConnectToDevice(-60, "180D", null)
+//                    .subscribe(
+//                        { Log.d(TAG, "auto connect search complete") },
+//                        { throwable: Throwable -> Log.e(TAG, "" + throwable.toString()) }
+//                    )
+//                }
+//            ) {
+//                Text(text = "Connect Sensor")
+//            }
+
+            OutlinedButton(onClick = { controller.connectToDevice(deviceId)} ) {
+                Text(text = "Connect")
             }
+
+            OutlinedButton(onClick = { controller.startStream() }) {
+                Text("Show acc")
+            }
+
             OutlinedButton(onClick = {
                 playerState.moveLeft()
             }) {
@@ -652,7 +646,8 @@ fun DrawScope.drawBoundingBox(color: Color, rect: Rect ) {
 fun HighScoreTextViews(currentScore: Int, highScore: Int, userVM: UserVM) {
     Row(
         modifier = Modifier
-            .fillMaxWidth().background(color = Color.Black)
+            .fillMaxWidth()
+            .background(color = Color.Black)
             .padding(start = 20.dp),
         horizontalArrangement = Arrangement.Start
     ) {

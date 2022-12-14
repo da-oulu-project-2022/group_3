@@ -80,24 +80,24 @@ class PolarController {
         private const val PERMISSION_REQUEST_CODE = 1
     }
 
-    private val bluetoothOnActivityResultLauncher: ActivityResultLauncher<Intent>
+//    private val bluetoothOnActivityResultLauncher: ActivityResultLauncher<Intent>
 
     constructor(context: Context,activity: ComponentActivity){
         applicationContext=context
         componentActivity=activity
 
-        bluetoothOnActivityResultLauncher = componentActivity.registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode != Activity.RESULT_OK) {
-                Log.w(TAG, "Bluetooth off")
-            }
-        }
+//        bluetoothOnActivityResultLauncher = componentActivity.registerForActivityResult(
+//            ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+//            if (result.resultCode != Activity.RESULT_OK) {
+//                Log.w(TAG, "Bluetooth off")
+//            }
+//        }
         api = PolarBleApiDefaultImpl.defaultImplementation(applicationContext, PolarBleApi.ALL_FEATURES)
         mySetup()
     }
 
     private fun mySetup(){
-        checkBT()
+        //checkBT()
 
         api.setApiCallback(object : PolarBleApiCallback() {
             override fun blePowerStateChanged(blePowerState: Boolean) {
@@ -286,7 +286,7 @@ class PolarController {
         val theValues = lastSegmentsList
         val fS = 10
         var i =0
-            Row {
+        Row {
         while (i<theValues.size){
                 if (i%2==0)
                     Column {
@@ -331,7 +331,7 @@ class PolarController {
 
         if (!bluetoothAdapter.isEnabled) {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            bluetoothOnActivityResultLauncher.launch(enableBtIntent)
+//            bluetoothOnActivityResultLauncher.launch(enableBtIntent)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

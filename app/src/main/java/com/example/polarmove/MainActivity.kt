@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.firscomposeapp.PolarController
 import com.example.polarmove.ui.theme.PolarMoveTheme
 import com.polar.sdk.api.PolarBleApi
 import com.polar.sdk.api.PolarBleApiCallback
@@ -65,73 +66,75 @@ class MainActivity : ComponentActivity() {
 
             val gameVM: GameVM = viewModel()
 
-            api.setPolarFilter(false)
-            api.setApiLogger { s: String -> Log.d(API_LOGGER_TAG, s) }
-            api.setApiCallback(object : PolarBleApiCallback() {
-                override fun blePowerStateChanged(powered: Boolean) {
-                    Log.d(TAG, "BLE power: $powered")
-                    bluetoothEnabled = powered
-                    if (powered) {
-//                        enableAllButtons()
-                        showToast("Phone Bluetooth on")
-                    } else {
-//                        disableAllButtons()
-                        showToast("Phone Bluetooth off")
-                    }
-                }
+            val controller = PolarController(this, this)
 
-                override fun deviceConnected(polarDeviceInfo: PolarDeviceInfo) {
-                    Log.d(TAG, "CONNECTED: " + polarDeviceInfo.deviceId)
-                    deviceId = polarDeviceInfo.deviceId
-                    deviceConnected = true
-//                    val buttonText = getString(R.string.disconnect_from_device, deviceId)
-//                    toggleButtonDown(connectButton, buttonText)
-                }
-
-                override fun deviceConnecting(polarDeviceInfo: PolarDeviceInfo) {
-                    Log.d(TAG, "CONNECTING: " + polarDeviceInfo.deviceId)
-                }
-
-                override fun deviceDisconnected(polarDeviceInfo: PolarDeviceInfo) {
-                    Log.d(TAG, "DISCONNECTED: " + polarDeviceInfo.deviceId)
-                    deviceConnected = false
-//                    val buttonText = getString(R.string.connect_to_device, deviceId)
-//                    toggleButtonUp(connectButton, buttonText)
-//                    toggleButtonUp(toggleSdkModeButton, R.string.enable_sdk_mode)
-                }
-
-                override fun streamingFeaturesReady(
-                    identifier: String, features: Set<PolarBleApi.DeviceStreamingFeature>
-                ) {
-                    for (feature in features) {
-                        Log.d(TAG, "Streaming feature $feature is ready")
-                    }
-                }
-
-                override fun hrFeatureReady(identifier: String) {
-                    Log.d(TAG, "HR READY: $identifier")
-                    // hr notifications are about to start
-                }
-
-                override fun disInformationReceived(identifier: String, uuid: UUID, value: String) {
-                    Log.d(TAG, "uuid: $uuid value: $value")
-                }
-
-                override fun batteryLevelReceived(identifier: String, level: Int) {
-                    Log.d(TAG, "BATTERY LEVEL: $level")
-                    gameVM.setBatteryLevel( level )
-                }
-
-                override fun hrNotificationReceived(identifier: String, data: PolarHrData) {
-                    Log.d(TAG, "HR value: ${data.hr} rrsMs: ${data.rrsMs} rr: ${data.rrs} contact: ${data.contactStatus} , ${data.contactStatusSupported}")
-                    gameVM.setHr(data.hr)
-                }
-
-
-                override fun polarFtpFeatureReady(s: String) {
-                    Log.d(TAG, "FTP ready")
-                }
-            })
+//            api.setPolarFilter(false)
+//            api.setApiLogger { s: String -> Log.d(API_LOGGER_TAG, s) }
+//            api.setApiCallback(object : PolarBleApiCallback() {
+//                override fun blePowerStateChanged(powered: Boolean) {
+//                    Log.d(TAG, "BLE power: $powered")
+//                    bluetoothEnabled = powered
+//                    if (powered) {
+////                        enableAllButtons()
+//                        showToast("Phone Bluetooth on")
+//                    } else {
+////                        disableAllButtons()
+//                        showToast("Phone Bluetooth off")
+//                    }
+//                }
+//
+//                override fun deviceConnected(polarDeviceInfo: PolarDeviceInfo) {
+//                    Log.d(TAG, "CONNECTED: " + polarDeviceInfo.deviceId)
+//                    deviceId = polarDeviceInfo.deviceId
+//                    deviceConnected = true
+////                    val buttonText = getString(R.string.disconnect_from_device, deviceId)
+////                    toggleButtonDown(connectButton, buttonText)
+//                }
+//
+//                override fun deviceConnecting(polarDeviceInfo: PolarDeviceInfo) {
+//                    Log.d(TAG, "CONNECTING: " + polarDeviceInfo.deviceId)
+//                }
+//
+//                override fun deviceDisconnected(polarDeviceInfo: PolarDeviceInfo) {
+//                    Log.d(TAG, "DISCONNECTED: " + polarDeviceInfo.deviceId)
+//                    deviceConnected = false
+////                    val buttonText = getString(R.string.connect_to_device, deviceId)
+////                    toggleButtonUp(connectButton, buttonText)
+////                    toggleButtonUp(toggleSdkModeButton, R.string.enable_sdk_mode)
+//                }
+//
+//                override fun streamingFeaturesReady(
+//                    identifier: String, features: Set<PolarBleApi.DeviceStreamingFeature>
+//                ) {
+//                    for (feature in features) {
+//                        Log.d(TAG, "Streaming feature $feature is ready")
+//                    }
+//                }
+//
+//                override fun hrFeatureReady(identifier: String) {
+//                    Log.d(TAG, "HR READY: $identifier")
+//                    // hr notifications are about to start
+//                }
+//
+//                override fun disInformationReceived(identifier: String, uuid: UUID, value: String) {
+//                    Log.d(TAG, "uuid: $uuid value: $value")
+//                }
+//
+//                override fun batteryLevelReceived(identifier: String, level: Int) {
+//                    Log.d(TAG, "BATTERY LEVEL: $level")
+//                    gameVM.setBatteryLevel( level )
+//                }
+//
+//                override fun hrNotificationReceived(identifier: String, data: PolarHrData) {
+//                    Log.d(TAG, "HR value: ${data.hr} rrsMs: ${data.rrsMs} rr: ${data.rrs} contact: ${data.contactStatus} , ${data.contactStatusSupported}")
+//                    gameVM.setHr(data.hr)
+//                }
+//
+//
+//                override fun polarFtpFeatureReady(s: String) {
+//                    Log.d(TAG, "FTP ready")
+//                }
+//            })
 
             val displayMetrics = DisplayMetrics()
             windowManager.defaultDisplay.getMetrics(displayMetrics)
@@ -148,7 +151,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    StartPoint( api, height, width, gameVM )
+                    StartPoint( api, height, width, gameVM, controller )
                 }
             }
         }
