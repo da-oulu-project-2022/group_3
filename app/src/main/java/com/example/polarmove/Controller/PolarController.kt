@@ -50,7 +50,7 @@ class PolarController {
 
     private var sensetivity = 350 //Accel in mG
     private var baseline = 1000 //Accel in mG
-    private var inputCooldownTime = 500 //time in ms
+    private var inputCooldownTime = 800 //time in ms
 
     //https://developer.android.com/kotlin/flow/stateflow-and-sharedflow
     //val inputChange: MutableStateFlow<Boolean> = MutableStateFlow<Boolean>(false)

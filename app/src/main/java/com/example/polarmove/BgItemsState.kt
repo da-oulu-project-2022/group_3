@@ -11,7 +11,7 @@ data class BgItemsState(
 
     init {
         initBgItems()
-        Log.d("MESSAGE", "SSSSSSSS")
+//        Log.d("MESSAGE", "SSSSSSSS")
     }
 
     fun initBgItems() {
@@ -36,7 +36,7 @@ data class BgItemsState(
     fun moveDown() {
         bgItemList.forEach { background ->
             background.yPos += obstacleSpeed * 5
-            Log.d("BG Y", background.yPos.toString())
+//            Log.d("BG Y", background.yPos.toString())
         }
         val imageCount = (0..14)
         val count = (0..2)
@@ -78,7 +78,7 @@ data class BgGreeneryItemsState(
 
     init {
         initBgGreeneryItems()
-        Log.d("MESSAGE", "SSSSSSSS")
+//        Log.d("MESSAGE", "SSSSSSSS")
     }
 
     fun initBgGreeneryItems() {
@@ -103,7 +103,7 @@ data class BgGreeneryItemsState(
     fun moveDown() {
         bgGreeneryItemList.forEach { greenery ->
             greenery.yPos += obstacleSpeed * 5
-            Log.d("BG Y", greenery.yPos.toString())
+//            Log.d("BG Y", greenery.yPos.toString())
         }
         val imageCount = (0..6)
         val count = (0..2)

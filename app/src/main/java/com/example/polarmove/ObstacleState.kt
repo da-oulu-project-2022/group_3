@@ -6,13 +6,16 @@ import androidx.compose.ui.graphics.ImageBitmap
 
 data class ObstacleState(
     val obstacleList: ArrayList<ObstacleModel> = ArrayList(),
-    var roadObjects: ArrayList<ImageBitmap>,
-    val obstXposs: List<Int>
+    var roadObjects: ArrayList<ImageLoader.ImageWithName>,
+    val obstXposs: List<Int>,
+    val obstacleNames: ArrayList<String>
 ) {
 
     init {
         initObstacle()
-        Log.d("MESSAGE", "SSSSSSSS")
+        for ( obstacle in obstacleList ) {
+            Log.d("OBSTACLE", obstacle.name)
+        }
     }
 
     fun initObstacle() {
@@ -23,10 +26,12 @@ data class ObstacleState(
 
         for ( i in 0 until obstacleCount ) {
             val count = (0..2)
+            val random = imageCount.random()
             val obstacle = ObstacleModel(
                 xPos = obstXposs[count.random()],
                 yPos = startY,
-                image = roadObjects[imageCount.random()],
+                image = roadObjects[random].image,
+                name = roadObjects[random].name
             )
             obstacleList.add(obstacle)
 
@@ -43,10 +48,12 @@ data class ObstacleState(
 
         if ( obstacleList.first().yPos >= deviceHeightInPixels + 100 ) {
             obstacleList.removeAt(0)
+            val random = imageCount.random()
             val obstacle = ObstacleModel(
                 xPos = obstXposs[count.random()],
                 yPos = nextObstacleY(obstacleList.last().yPos),
-                image = roadObjects[imageCount.random()],
+                image = roadObjects[random].image,
+                name = roadObjects[random].name
             )
             obstacleList.add(obstacle)
         }
@@ -66,10 +73,11 @@ data class ObstacleModel(
     var xPos: Int,
     var yPos: Int,
     var zLevel: Int = 1,
-    var image: ImageBitmap
+    var image: ImageBitmap,
+    var name: String
 ) {
     fun getBounds(): Rect {
-        Log.d("RECTANGLE", yPos.toString())
+//        Log.d("RECTANGLE", yPos.toString())
         return Rect(
             left = xPos.toFloat(),
             top = yPos.toFloat(),
@@ -102,7 +110,6 @@ data class ManholeState(
         for ( i in 0 until obstacleCount ) {
             val count = (0..2)
             val manhole = ManholeModel(
-//                xPos = xPossibilities[(0..2).random()],
                 xPos = obstXposs[count.random()],
                 yPos = startY,
                 image = manholeItem[imageCount.random()]
@@ -116,7 +123,7 @@ data class ManholeState(
     fun moveDown() {
         manholeList.forEach { manhole ->
             manhole.yPos += obstacleSpeed * 5
-            Log.d("Manhole Y", manhole.yPos.toString())
+//            Log.d("Manhole Y", manhole.yPos.toString())
         }
         val imageCount = (0..1)
         val count = (0..2)

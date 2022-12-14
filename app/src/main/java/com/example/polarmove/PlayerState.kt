@@ -17,9 +17,10 @@ class PlayerState(
     var yPos: Int = 0,
     var zLevel: Int = 0,
     var keyframe: Int = 0,
-    var walkCycle: ArrayList<ImageBitmap>,
-    var jumpCycle: ArrayList<ImageBitmap>,
-    var crawlCycle: ArrayList<ImageBitmap>,
+//    var walkCycle: ArrayList<ImageBitmap>,
+    var walkCycle: ArrayList<ImageLoader.ImageWithName>,
+    var jumpCycle: ArrayList<ImageLoader.ImageWithName>,
+    var crawlCycle: ArrayList<ImageLoader.ImageWithName>,
     var isJumping: Boolean = false,
     var isCrawling: Boolean = false,
     var playerPositionScale: Double = if ( deviceWidthInPixels > 1080 ) 0.44 else 0.60,
@@ -29,21 +30,18 @@ class PlayerState(
 ) {
 
     val image: ImageBitmap
-//        get() = if ( keyframe <= 10) bitMapList[0] else bitMapList[1]
-//        get() = if ( keyframe <= 10) walkCycle[0] else walkCycle[1]
-//        get() = if ( keyframe <= 25) jumpCycle[0] else jumpCycle[1]
         get() = if ( isJumping && keyframe <= 38 ) {
-            jumpCycle[0]
+            jumpCycle[0].image
         } else if ( isJumping && keyframe > 38 ){
-            jumpCycle[1]
+            jumpCycle[1].image
         } else if( isCrawling && keyframe <= 20) {
-            crawlCycle[0]
+            crawlCycle[0].image
         } else if ( isCrawling && keyframe > 20){
-            crawlCycle[1]
+            crawlCycle[1].image
         } else if ( keyframe <=10) {
-            walkCycle[0]
+            walkCycle[0].image
         } else {
-            walkCycle[1]
+            walkCycle[1].image
         }
 
     init {
@@ -51,7 +49,6 @@ class PlayerState(
     }
 
     fun playerInit(){
-//        xPos = 0
         xPos = pos2
         yPos = (deviceHeightInPixels - (deviceHeightInPixels * 0.15 + distanceBetweenLines * 3)).toInt()
         zLevel = 0

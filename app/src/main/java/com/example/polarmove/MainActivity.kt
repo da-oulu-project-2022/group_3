@@ -33,6 +33,8 @@ var deviceWidthInPixels = 1080
 var distanceBetweenObstacles = 1000
 var obstacleSpeed = 1
 const val distanceBetweenLines = 10
+var lineStart = 0.02
+var lineEnd = 1.41
 
 class MainActivity : ComponentActivity() {
 
@@ -40,21 +42,6 @@ class MainActivity : ComponentActivity() {
         private const val TAG = "MainActivity"
         private const val API_LOGGER_TAG = "API LOGGER"
         private const val PERMISSION_REQUEST_CODE = 1
-    }
-
-    private fun showToast(message: String) {
-        val toast = Toast.makeText(applicationContext, message, Toast.LENGTH_LONG)
-        toast.show()
-
-    }
-
-    private var deviceId = "B5DED921"
-
-//    val api: PolarBleApi = PolarBleApiDefaultImpl.defaultImplementation(applicationContext,  PolarBleApi.ALL_FEATURES)
-
-    private val api: PolarBleApi by lazy {
-        // Notice PolarBleApi.ALL_FEATURES are enabled
-        PolarBleApiDefaultImpl.defaultImplementation(applicationContext, PolarBleApi.ALL_FEATURES)
     }
 
     private var bluetoothEnabled = false
@@ -83,7 +70,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    StartPoint( api, height, width, gameVM, controller )
+                    StartPoint( height, width, gameVM, controller )
                 }
             }
         }
