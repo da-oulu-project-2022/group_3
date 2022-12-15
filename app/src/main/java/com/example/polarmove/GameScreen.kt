@@ -51,13 +51,9 @@ import kotlin.collections.ArrayList
 
 @Composable
 fun GameScreen(
-    navControl: NavController,
     userVM: UserVM,
     gameVM: GameVM,
-    height: Int,
-    width: Int,
     gameState: GameState,
-//    walkCycle: ArrayList<ImageBitmap>,
     walkCycle: ArrayList<ImageLoader.ImageWithName>,
     jumpCycle: ArrayList<ImageLoader.ImageWithName>,
     crawlCycle: ArrayList<ImageLoader.ImageWithName>,
@@ -80,7 +76,7 @@ fun GameScreen(
     val bgGreeneryItemsState by remember { mutableStateOf( BgGreeneryItemsState ( greeneryObjects = greeneryObjects ) ) }
     val cloudState by remember { mutableStateOf( CloudState( cloudItems = cloudItems ) ) }
     val roadState by remember { mutableStateOf( RoadState() ) }
-    val playerState by remember { mutableStateOf( PlayerState( walkCycle = walkCycle, crawlCycle = crawlCycle, jumpCycle = jumpCycle ) ) }
+    val playerState by remember { mutableStateOf( PlayerState( walkCycle = walkCycle, crawlCycle = crawlCycle, jumpCycle = jumpCycle, gameVM = gameVM ) ) }
     val manholeState by remember { mutableStateOf( ManholeState( manholeItem = manholeItem ) ) }
     val currentScore by gameState.currentScore.observeAsState()
     val highScore by gameState.highScore.observeAsState()
@@ -89,28 +85,28 @@ fun GameScreen(
         GlobalScope.launch {
             controller.inputLeft.collect{
                 if(it) {
-                    playerState.moveLeft()
+                    highScore?.let { it1 -> playerState.moveLeft(it1) }
                 }
             }
         }
         GlobalScope.launch {
             controller.inputRight.collect{
                 if(it) {
-                    playerState.moveRight()
+                    highScore?.let { it1 -> playerState.moveRight(it1) }
                 }
             }
         }
         GlobalScope.launch {
             controller.inputUp.collect{
                 if(it) {
-                    playerState.jump()
+                    currentScore?.let { it1 -> playerState.jump(it1) }
                 }
             }
         }
         GlobalScope.launch {
             controller.inputDown.collect{
                 if(it) {
-                    playerState.crawl()
+                    currentScore?.let { it1 -> playerState.crawl(it1) }
                 }
             }
         }
@@ -131,6 +127,8 @@ fun GameScreen(
                     .overlaps( obstacle.getBounds() ) && playerState.zLevel >= obstacle.zLevel
             ) {
                 gameState.isGameOver = true
+//                gameVM.setTimePlayed(currentScore?.div(100))
+//                gameVM.saveGame(110, 145, userVM.userEmail.value, userVM.userName.value, userVM.userData.weight.toInt(), userVM.userData.age.toInt(), userVM.userData.gender )
                 return@forEach
             }
         }
@@ -146,7 +144,7 @@ fun GameScreen(
             modifier = Modifier
                 .width((0.15 * deviceWidthInPixels).dp)
                 .fillMaxHeight()
-                .background(color = Color.Black),
+                .background(color = Color.White),
             verticalArrangement = Arrangement.SpaceBetween
         ){
 
@@ -162,7 +160,7 @@ fun GameScreen(
             Column(
                 modifier = Modifier
                     .background(Color.Black)
-                    .padding( 10.dp, 0.dp)
+                    .padding(10.dp, 0.dp)
             ){
                 OutlinedButton(onClick = { controller.connectToDevice(deviceId)} ) {
                     Text(text = "Connect")
@@ -172,27 +170,31 @@ fun GameScreen(
                     Text("Show acc")
                 }
 
-//                OutlinedButton(onClick = {
-//                    playerState.moveLeft()
-//                }) {
-//                    Text("Left")
-//                }
-//                OutlinedButton(onClick = {
-//                    playerState.moveRight()
-//                }) {
-//                    Text("Right")
-//                }
                 OutlinedButton(onClick = {
-                    playerState.jump()
+                    currentScore?.let { playerState.moveLeft(it) }
+                }) {
+                    Text("Left")
+                }
+                OutlinedButton(onClick = {
+                    currentScore?.let { playerState.moveRight(it) }
+                }) {
+                    Text("Right")
+                }
+                OutlinedButton(onClick = {
+                    currentScore?.let { playerState.jump(it) }
                 }) {
                     Text("Jump")
                 }
                 OutlinedButton(onClick = {
-                    playerState.crawl()
+                    currentScore?.let { playerState.crawl(it) }
                 }) {
                     Text("Crawl")
                 }
+                Text("Dashes: ${gameVM.dashes.value}")
+                Text("Jumps: ${gameVM.jumps.value}")
+                Text("Squats: ${gameVM.squats.value}")
                 HighScoreTextViews(requireNotNull(currentScore), requireNotNull(highScore), userVM )
+                Text("Score: ${gameVM.score.value}")
                 Text("HR: ${gameVM.hr.value}")
                 Text("Battery: ${gameVM.batteryLevel.value}%")
             }
@@ -206,7 +208,7 @@ fun GameScreen(
                 .clickable(
                     onClick = {
                         if (!gameState.isGameOver) {
-                            playerState.moveRight()
+                            currentScore?.let { playerState.moveRight(it) }
                         } else {
                             roadState.initLane()
                             obstacleState.initObstacle()
@@ -348,7 +350,7 @@ fun HighScoreTextViews(currentScore: Int, highScore: Int, userVM: UserVM) {
         Text( text = userVM.userData.username )
         Spacer(modifier = Modifier.height(5.dp))
         Text(
-            text = "Score: $currentScore", color = Color.White
+            text = "Time: ${currentScore / 100}", color = Color.White
         )
     }
 }

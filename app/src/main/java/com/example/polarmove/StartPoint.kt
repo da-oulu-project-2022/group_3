@@ -20,7 +20,9 @@ import com.google.firebase.auth.FirebaseUser
 import com.polar.sdk.api.PolarBleApi
 
 @Composable
-fun StartPoint( height: Int, width: Int, gameVM: GameVM, controller: PolarController ){
+fun StartPoint( gameVM: GameVM, controller: PolarController ){
+
+    Log.d("START", "POINT")
 
     val userVM: UserVM = viewModel()
 
@@ -140,6 +142,7 @@ fun StartPoint( height: Int, width: Int, gameVM: GameVM, controller: PolarContro
 
 
 //////////////    Background objects    ////////////////////////////////////////////////////////////////////////////////
+
     val houseBitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.house1version1  )
     val house2Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.house1version2 )
     val house3Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.house1version3 )
@@ -206,7 +209,7 @@ fun StartPoint( height: Int, width: Int, gameVM: GameVM, controller: PolarContro
     backgroundObjects.add( streetlight )
     backgroundObjects.add( trashcanbg )
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /////////    Clouds    ////////////////////////////////////////////////////////////////////////////////////////
     val cloudBitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.cloud  )
@@ -227,7 +230,7 @@ fun StartPoint( height: Int, width: Int, gameVM: GameVM, controller: PolarContro
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////    Manhole     ////////////////////////////////////////////////////////////////////////////////////////
+//////////    Manhole     ///////////////////////////////////////////////////////////////////////////////////////
 
     val manholeBitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.manhole  )
     val manhole2Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.manhole  )
@@ -238,7 +241,7 @@ fun StartPoint( height: Int, width: Int, gameVM: GameVM, controller: PolarContro
     manholeItem.add( manhole )
     manholeItem.add( manhole2)
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     var obstaclePositionScale: Double = if ( deviceWidthInPixels > 1080 ) 0.44 else 0.60
     val obst1: Int = (obstaclePositionScale * deviceWidthInPixels - ( deviceWidthInPixels * 0.19 + deviceWidthInPixels * 0.01)).toInt()
@@ -258,7 +261,7 @@ fun StartPoint( height: Int, width: Int, gameVM: GameVM, controller: PolarContro
                 MainScreen( navControl, userVM, auth, scState )
             }
             composable( route = "GameScreen"){
-                GameScreen(navControl, userVM, gameVM, height, width, GameState(), catWalkLoader.imagesWithName, catJumpLoader.imagesWithName, catCrawlLoader.imagesWithName, roadObjects = obstacleLoader.imagesWithName, backgroundObjects, cloudItems, greeneryObjects, manholeItem, obstXposs, controller, obstacleNames )
+                GameScreen( userVM, gameVM, GameState(gameVM = gameVM), catWalkLoader.imagesWithName, catJumpLoader.imagesWithName, catCrawlLoader.imagesWithName, obstacleLoader.imagesWithName, backgroundObjects, cloudItems, greeneryObjects, manholeItem, obstXposs, controller, obstacleNames )
             }
             composable( route = "UserInfo"){
                 UserInfo( navControl, userVM, scState )

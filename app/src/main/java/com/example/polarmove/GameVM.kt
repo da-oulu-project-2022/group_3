@@ -23,13 +23,7 @@ class GameVM: ViewModel() {
     var calories = mutableStateOf(2800)
     var hr = mutableStateOf(0)
     var batteryLevel = mutableStateOf(0)
-
-    class Object(
-        val x: Int = 0,
-        val y: Int = 0,
-        val z: Int = 0,
-        val name: String = ""
-    )
+    var timePlayed = mutableStateOf<Int?>(0)
 
     fun getOwnGames( email: String ){
         Firebase.firestore
@@ -87,18 +81,24 @@ class GameVM: ViewModel() {
     fun setHr( hrValue: Int ) {
         hr.value = hrValue
     }
+
+    fun setTimePlayed( time: Int? ){
+        timePlayed.value = time
+    }
     fun setBatteryLevel( batteryReading: Int ){
         batteryLevel.value = batteryReading
     }
 
-    fun calorieCalculator(time: Int, hr_avg: Int, weight: Int, age: Int, gender: String) {
-        val timeMinutes = time.toDouble() / 60
+    fun calorieCalculator(time: Int? = timePlayed.value, hr_avg: Int, weight: Int, age: Int, gender: String) {
+        val timeMinutes = time?.toDouble()?.div(60)
         val var1 = if (gender == "Male") 0.6309 else 0.4472
         val var2 = if (gender == "Male") 0.1988 else 0.1263
         val var3 = if (gender == "Male") 0.2017 else 0.074
         val var4 = if (gender == "Male") 55.0969 else 20.4022
 
-        calories.value = (timeMinutes * (var1 * hr_avg + var2 * weight + var3 * age - var4) / 4.184).toInt()
+        if (timeMinutes != null) {
+            calories.value = (timeMinutes * (var1 * hr_avg + var2 * weight + var3 * age - var4) / 4.184).toInt()
+        }
     }
 
     private fun pointsCalculator(time: Int ) {
@@ -118,7 +118,7 @@ class GameVM: ViewModel() {
         pointsCalculator( time )
     }
 
-    private fun gameReset(){
+    fun gameReset(){
         jumps.value = 0
         squats.value = 0
         dashes.value = 0
@@ -129,8 +129,12 @@ class GameVM: ViewModel() {
         heart_rate_avg: Int,
         heart_rate_max: Int,
         user_id: String,
-        username: String
+        username: String,
+        user_weight: Int,
+        user_age: Int,
+        gender: String
     ){
+        calorieCalculator(timePlayed.value, heart_rate_avg, user_weight, user_age, gender )
         val timestamp = System.currentTimeMillis()
         val newGame = GameDataClass(
                                 calories.value,

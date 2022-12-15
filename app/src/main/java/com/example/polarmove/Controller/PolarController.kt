@@ -31,6 +31,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.unit.sp
+import com.example.polarmove.GameVM
+import com.polar.sdk.api.model.PolarHrData
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -39,6 +41,7 @@ class PolarController {
 
     private val applicationContext: Context
     private val componentActivity: ComponentActivity
+    private val gameViewModel: GameVM
 
     private var deviceId = "B5E66523"
     private var connected = false
@@ -81,9 +84,10 @@ class PolarController {
     }
 
 
-    constructor(context: Context, activity: ComponentActivity) {
+    constructor(context: Context, activity: ComponentActivity, gameVM: GameVM) {
         applicationContext = context
         componentActivity = activity
+        gameViewModel = gameVM
 
         api = PolarBleApiDefaultImpl.defaultImplementation(
             applicationContext,
@@ -112,6 +116,17 @@ class PolarController {
                 connectionStateText.value = "Connecting"
 
             }
+
+            override fun batteryLevelReceived(identifier: String, level: Int) {
+                Log.d(TAG, "BATTERY LEVEL: $level")
+                gameViewModel.batteryLevel.value = level
+            }
+
+            override fun hrNotificationReceived(identifier: String, data: PolarHrData) {
+                Log.d(TAG, "HR value: ${data.hr} rrsMs: ${data.rrsMs} rr: ${data.rrs} contact: ${data.contactStatus} , ${data.contactStatusSupported}")
+                gameViewModel.hr.value = data.hr
+            }
+
         }
         )
         Log.d(TAG, "Setup complete")

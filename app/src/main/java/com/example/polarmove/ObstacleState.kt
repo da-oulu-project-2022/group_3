@@ -13,9 +13,6 @@ data class ObstacleState(
 
     init {
         initObstacle()
-        for ( obstacle in obstacleList ) {
-            Log.d("OBSTACLE", obstacle.name)
-        }
     }
 
     fun initObstacle() {
@@ -56,6 +53,7 @@ data class ObstacleState(
                 name = roadObjects[random].name
             )
             obstacleList.add(obstacle)
+//            Log.d("OBSTACLE", obstacle.name)
         }
 
     }

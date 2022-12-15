@@ -17,10 +17,10 @@ class PlayerState(
     var yPos: Int = 0,
     var zLevel: Int = 0,
     var keyframe: Int = 0,
-//    var walkCycle: ArrayList<ImageBitmap>,
     var walkCycle: ArrayList<ImageLoader.ImageWithName>,
     var jumpCycle: ArrayList<ImageLoader.ImageWithName>,
     var crawlCycle: ArrayList<ImageLoader.ImageWithName>,
+    var gameVM: GameVM,
     var isJumping: Boolean = false,
     var isCrawling: Boolean = false,
     var playerPositionScale: Double = if ( deviceWidthInPixels > 1080 ) 0.44 else 0.60,
@@ -51,7 +51,7 @@ class PlayerState(
     fun playerInit(){
         xPos = pos2
         yPos = (deviceHeightInPixels - (deviceHeightInPixels * 0.15 + distanceBetweenLines * 3)).toInt()
-        zLevel = 0
+        zLevel = 1
         isJumping = false
         isCrawling = false
     }
@@ -68,29 +68,31 @@ class PlayerState(
         } else if (!isJumping && !isCrawling && keyframe == 20) {
             keyframe = 0
         } else if (isCrawling && keyframe == 40) {
-            if (keyframe == 20) {
                 keyframe = 0
-            }
         }
     }
 
-    fun moveLeft() {
+    fun moveLeft(score: Int) {
         xPos = if ( xPos == pos1 ) pos2 else pos3
+        gameVM.dashIncrease(score)
     }
 
-    fun moveRight() {
+    fun moveRight(score: Int) {
         xPos = if ( xPos == pos3 ) pos2 else pos1
+        gameVM.dashIncrease(score)
     }
 
-    fun jump() {
+    fun jump(score: Int) {
         isCrawling = false
         isJumping = true
         keyframe = 0
+        gameVM.jumpIncrease(score)
     }
 
-    fun crawl() {
+    fun crawl(score: Int) {
         isCrawling = !isCrawling
         keyframe = 0
+        gameVM.squatIncrease(score)
     }
 
     fun getBounds(): Rect {

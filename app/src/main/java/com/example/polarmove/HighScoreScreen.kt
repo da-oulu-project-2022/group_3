@@ -86,7 +86,7 @@ fun HighScoresContent( gameVM: GameVM, userVM: UserVM ){
             }
 
             OutlinedButton(
-                onClick = { gameVM.saveGame(110,128, userVM.userEmail.value, userVM.userName.value ) },
+                onClick = { gameVM.saveGame(110,128, userVM.userEmail.value, userVM.userName.value, userVM.userData.weight.toInt(), userVM.userData.age.toInt(), userVM.userData.gender ) },
                 modifier = Modifier
                     .fillMaxWidth(.75f)
                     .height(40.dp),

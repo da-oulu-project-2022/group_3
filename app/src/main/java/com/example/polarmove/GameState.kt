@@ -1,11 +1,13 @@
 package com.example.polarmove
 
+import androidx.compose.runtime.MutableState
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 
 class GameState(
     initialScore: Int = 0,
     initialHighScore: Int = 0,
+    var gameVM: GameVM,
     var isGameOver: Boolean = false
 ) {
 
