@@ -39,7 +39,7 @@ class PolarController {
     private val accelSumArray = mutableStateOf(intArrayOf(0, 0, 0))
 
 
-    private var sensetivity = 600 //Accel in mG
+    private var sensetivity = 450 //Accel in mG
     private var baseline = 1000 //Accel in mG
     private var inputCooldownTime = 800 //time in ms
 
@@ -190,36 +190,60 @@ class PolarController {
     private val _lastSegmentsList = mutableStateListOf(Vector3D())
     private val lastSegmentsList: List<Vector3D> = _lastSegmentsList
 
+    private var lastPacketTimePolar:Long = 0
+    private var lastPackageTimeAndroid: Long =0
+    private val milliSecondsToNanoSeconds = 1000000
+
     private fun onAccelReceive(polarAccelerometerData: PolarAccelerometerData) {
+        val thisPackageTimeAndroid = System.currentTimeMillis()
+        val thisPacketTimePolar = polarAccelerometerData.timeStamp/milliSecondsToNanoSeconds
 
         accelValuesArray.value.clear()
         _lastSegmentsList.clear()
-
+        val sampleAmounts = polarAccelerometerData.samples.size
+        var xtSample =0
         for (data in polarAccelerometerData.samples) {
-
+            xtSample++
             _rawData.value = intArrayOf(data.x, data.y, data.z)
             currentSegmentVector3d.add(data.x, data.y, data.z)
             lastPackageAverage.add(data.x, data.y, data.z)
             currentSegmentSamples++
 
             if (currentSegmentSamples >= maxSegmentSize) {
-                processFullSegment()
+                val diff = (thisPacketTimePolar-lastPacketTimePolar)
+                val percentage = (diff*(xtSample.toDouble()/sampleAmounts.toDouble())).toLong()
+                Log.d(TAG_INPUT,"Polar Time Recieved: $thisPacketTimePolar Android Time Recieved $thisPackageTimeAndroid")
+                Log.d(TAG_INPUT,"Diff: $diff percentage: $percentage")
+                Log.d(TAG_INPUT,"React to ${thisPackageTimeAndroid+percentage}")
+                Log.d(TAG_INPUT,"Last Polar Time Recieved: $lastPacketTimePolar Last Android Time Recieved $lastPackageTimeAndroid")
+
+                processFullSegment(thisPackageTimeAndroid+percentage)
             }
 
             accelValuesArray.value.add(intArrayOf(data.x, data.y, data.z))
         }
+
         lastPackageAverage /= polarAccelerometerData.samples.size
         accelSumArray.value = lastPackageAverage.toIntArray()
+        lastPacketTimePolar=(thisPacketTimePolar)
+        lastPackageTimeAndroid = thisPackageTimeAndroid
+
+
     }
 
-    private fun processFullSegment() {
+    private fun processFullSegment(timeStamp:Long) {
 
         currentSegmentVector3d /= maxSegmentSize
         Log.d(TAG_DATA, printInput(currentSegmentVector3d))
 
-        CheckIfValidInput(currentSegmentVector3d)
+        Log.d(TAG_INPUT,"recieved $timeStamp suspenduntil $suspendInputUntill")
+        orientation.alignVector(currentSegmentVector3d)
+        if (timeStamp>suspendInputUntill){
+            Log.d(TAG_INPUT,"Try for input")
+            CheckIfValidInput(currentSegmentVector3d,timeStamp)
+        }
 
-        Log.d(TAG_INPUT, "Before Copy $currentSegmentVector3d")
+        //Log.d(TAG_INPUT, "Before Copy $currentSegmentVector3d")
         _fullSegment.value = currentSegmentVector3d.toIntArray()
         _lastSegmentsList.add(Vector3D(currentSegmentVector3d))
 
@@ -229,35 +253,28 @@ class PolarController {
     }
     val TAG_INPUT = "PolarController_InputValidation"
     var inputOnCooldown = false
+    var suspendInputUntill:Long =0;
     private suspend fun inputCooldown() {
         delay(inputCooldownTime.toLong())
         Log.d(TAG_INPUT,"Can move again")
         inputOnCooldown = false
     }
 
-    private fun CheckIfValidInput(input: Vector3D) {
+    private fun CheckIfValidInput(input: Vector3D,timeStamp: Long) {
         Log.d(TAG_DATA, "Before rotation " + printInput(input))
 
         Log.d(TAG_DATA, "Rotate by ${offsetRotation[0]} ${offsetRotation[1]} ${offsetRotation[2]}")
         //input.rotate(offsetRotation)
-        orientation.alignVector(input)
+        //orientation.alignVector(input)
 
         _lastSegmentsList.add(Vector3D(input))
 
         Log.d(TAG_DATA, "After rotation " + printInput(input))
 
-        checkInputDirection(_inputRight, input.x, sensetivity)
-        checkInputDirection(_inputLeft, -input.x, sensetivity)
-        checkInputDirection(_inputUp, (input.z-baseline), (sensetivity))
-        checkInputDirection(_inputDown, -(input.z-baseline), (sensetivity))
-    }
-
-    private fun orientate(orientation: Orientation){
-        val TAG_ORIENTATION = "Controller_Orientation"
-        Log.d(TAG_ORIENTATION,"")
-        var up = "+z"
-        var right = "+x"
-
+        checkInputDirection(_inputRight, input.x, sensetivity,timeStamp)
+        checkInputDirection(_inputLeft, -input.x, sensetivity,timeStamp)
+        checkInputDirection(_inputUp, (input.z-baseline), (sensetivity),timeStamp)
+        checkInputDirection(_inputDown, -(input.z-baseline), (sensetivity),timeStamp)
     }
 
     @Composable
@@ -439,7 +456,7 @@ class PolarController {
         }
     }
     // lights up -> up = swimmer right -> +z right = +x
-    private fun checkInputDirection(direction: MutableStateFlow<Boolean>, input: Double, sens: Int)
+    private fun checkInputDirection(direction: MutableStateFlow<Boolean>, input: Double, sens: Int,timeStamp:Long)
     {
         val before = direction.value
         if (inputOnCooldown) {
@@ -450,6 +467,9 @@ class PolarController {
             if (before!=direction.value){
                 Log.d(TAG_INPUT,"Cant move for now")
                 inputOnCooldown = true
+                suspendInputUntill = timeStamp+inputCooldownTime
+                Log.d(TAG_INPUT,"Suspend untill $suspendInputUntill")
+
                 GlobalScope.launch { inputCooldown() }
             }
 
