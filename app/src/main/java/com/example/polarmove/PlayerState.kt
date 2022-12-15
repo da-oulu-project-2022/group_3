@@ -56,7 +56,7 @@ class PlayerState(
     fun playerInit(){
         xPos = pos2
         yPos = (deviceHeightInPixels - (deviceHeightInPixels * 0.15 + distanceBetweenLines * 3)).toInt()
-        zLevel = 1
+        zLevel = 0
         isJumping = false
         isCrawling = false
     }

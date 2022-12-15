@@ -82,6 +82,7 @@ fun StartPoint( gameVM: GameVM, controller: PolarController ){
         lineEnd = 2.41
         manholeSize = 580
         manholeSize2 = 380
+    }
     
 
 
@@ -231,5 +232,4 @@ fun StartPoint( gameVM: GameVM, controller: PolarController ){
         }
     }
 
-}
 }

@@ -170,26 +170,27 @@ fun GameScreen(
                     Text("Show acc")
                 }
 
-                OutlinedButton(onClick = {
-                    currentScore?.let { playerState.moveLeft(it) }
-                }) {
-                    Text("Left")
-                }
-                OutlinedButton(onClick = {
-                    currentScore?.let { playerState.moveRight(it) }
-                }) {
-                    Text("Right")
-                }
-                OutlinedButton(onClick = {
-                    currentScore?.let { playerState.up(it) }
-                }) {
-                    Text("Up")
-                }
-                OutlinedButton(onClick = {
-                    currentScore?.let { playerState.crawl(it) }
-                }) {
-                    Text("Down")
-                }
+                controller.showOrientationSettings()
+//                OutlinedButton(onClick = {
+//                    currentScore?.let { playerState.moveLeft(it) }
+//                }) {
+//                    Text("Left")
+//                }
+//                OutlinedButton(onClick = {
+//                    currentScore?.let { playerState.moveRight(it) }
+//                }) {
+//                    Text("Right")
+//                }
+//                OutlinedButton(onClick = {
+//                    currentScore?.let { playerState.up(it) }
+//                }) {
+//                    Text("Up")
+//                }
+//                OutlinedButton(onClick = {
+//                    currentScore?.let { playerState.crawl(it) }
+//                }) {
+//                    Text("Down")
+//                }
                 Text("Dashes: ${gameVM.dashes.value}")
                 Text("Jumps: ${gameVM.jumps.value}")
                 Text("Squats: ${gameVM.squats.value}")
