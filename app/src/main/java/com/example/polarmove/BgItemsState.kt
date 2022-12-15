@@ -5,7 +5,8 @@ import androidx.compose.ui.graphics.ImageBitmap
 
 data class BgItemsState(
     val bgItemList: ArrayList<BgItemsModel> = ArrayList(),
-    var backgroundObjects: ArrayList<ImageBitmap>,
+//    var backgroundObjects: ArrayList<ImageBitmap>,
+    var backgroundObjects: ArrayList<ImageLoader.ImageWithName>,
     val obstXposs: List<Int> = listOf(-185,-195,-190)
 ) {
 
@@ -22,10 +23,11 @@ data class BgItemsState(
 
         for ( i in 0 until obstacleCount ) {
             val count = (0..2)
+            val random = imageCount.random()
             val background = BgItemsModel(
                 xPos = obstXposs[count.random()],
                 yPos = startY,
-                image = backgroundObjects[imageCount.random()]
+                image = backgroundObjects[random].image
             )
             bgItemList.add(background)
 
@@ -43,10 +45,11 @@ data class BgItemsState(
 
         if ( bgItemList.first().yPos >= deviceHeightInPixels + 100 ) {
             bgItemList.removeAt(0)
+            val random = imageCount.random()
             val backgroundItem = BgItemsModel(
                 xPos = obstXposs[count.random()],
                 yPos = nextItemY(bgItemList.last().yPos),
-                image = backgroundObjects[imageCount.random()]
+                image = backgroundObjects[random].image
             )
             bgItemList.add(backgroundItem)
         }
@@ -72,7 +75,7 @@ data class BgItemsModel(
 
 data class BgGreeneryItemsState(
     val bgGreeneryItemList: ArrayList<BgGreeneryModel> = ArrayList(),
-    var greeneryObjects: ArrayList<ImageBitmap>,
+    var greeneryObjects: ArrayList<ImageLoader.ImageWithName>,
     val obstXposs: List<Int> = listOf(50,50,50)
 ) {
 
@@ -89,10 +92,11 @@ data class BgGreeneryItemsState(
 
         for ( i in 0 until obstacleCount ) {
             val count = (0..2)
+            val random = imageCount.random()
             val greenery = BgGreeneryModel(
                 xPos = obstXposs[count.random()],
                 yPos = startY,
-                image = greeneryObjects[imageCount.random()]
+                image = greeneryObjects[random].image
             )
             bgGreeneryItemList.add(greenery)
 
@@ -110,10 +114,11 @@ data class BgGreeneryItemsState(
 
         if ( bgGreeneryItemList.first().yPos >= deviceHeightInPixels + 100 ) {
             bgGreeneryItemList.removeAt(0)
+            val random = imageCount.random()
             val greenery = BgGreeneryModel(
                 xPos = obstXposs[count.random()],
                 yPos = nextItemY(bgGreeneryItemList.last().yPos),
-                image = greeneryObjects[imageCount.random()]
+                image = greeneryObjects[random].image
             )
             bgGreeneryItemList.add(greenery)
         }

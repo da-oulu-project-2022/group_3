@@ -1,6 +1,9 @@
 package com.example.polarmove
 
 import android.Manifest
+import android.media.AudioAttributes
+import android.media.AudioManager
+import android.media.SoundPool
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -38,18 +41,33 @@ var lineEnd = 1.41
 
 class MainActivity : ComponentActivity() {
 
-//    companion object {
-//        private const val TAG = "MainActivity"
-//        private const val API_LOGGER_TAG = "API LOGGER"
-//        private const val PERMISSION_REQUEST_CODE = 1
-//    }
+    companion object {
+        var soundPool: SoundPool? = null
+        var sound1 = 0
+        var sound2 = 0
+        var sound3 = 0
+        var sound4 = 0
+    }
 
-//    private var bluetoothEnabled = false
-//    private var deviceConnected = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
+            soundPool = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                val audioAttributes = AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build()
+                SoundPool.Builder().setMaxStreams(2)
+                    .setAudioAttributes(audioAttributes).build()
+            } else {
+                SoundPool(4, AudioManager.STREAM_MUSIC, 0)
+            }
+            sound1 = soundPool!!.load(this, R.raw.dashsound, 1)
+            sound2 = soundPool!!.load(this, R.raw.jumpsound, 1)
+            sound3 = soundPool!!.load(this, R.raw.meow, 1)
+            sound4 = soundPool!!.load(this, R.raw.purrandmeow, 1)
 
             Log.d("MAIN", "ACTIVITY")
             val gameVM: GameVM = viewModel()
@@ -85,4 +103,11 @@ class MainActivity : ComponentActivity() {
 //            requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), PERMISSION_REQUEST_CODE)
 //        }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        soundPool!!.release()
+        soundPool = null
+    }
+
 }

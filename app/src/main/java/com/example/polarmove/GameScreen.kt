@@ -58,13 +58,12 @@ fun GameScreen(
     jumpCycle: ArrayList<ImageLoader.ImageWithName>,
     crawlCycle: ArrayList<ImageLoader.ImageWithName>,
     roadObjects: ArrayList<ImageLoader.ImageWithName>,
-    backgroundObjects: ArrayList<ImageBitmap>,
-    cloudItems: ArrayList<ImageBitmap>,
-    greeneryObjects: ArrayList<ImageBitmap>,
+    backgroundObjects: ArrayList<ImageLoader.ImageWithName>,
+    cloudItems: ArrayList<ImageLoader.ImageWithName>,
+    greeneryObjects: ArrayList<ImageLoader.ImageWithName>,
     manholeItem: ArrayList<ImageBitmap>,
     obstXposs: List<Int>,
-    controller: PolarController,
-    obstacleNames: ArrayList<String>
+    controller: PolarController
 ){
 
 
@@ -72,7 +71,7 @@ fun GameScreen(
 
     var deviceId = "B5DED921"
 
-    val obstacleState by remember { mutableStateOf( ObstacleState( roadObjects = roadObjects, obstXposs = obstXposs, obstacleNames = obstacleNames) ) }
+    val obstacleState by remember { mutableStateOf( ObstacleState( roadObjects = roadObjects, obstXposs = obstXposs ) ) }
     val bgItemsState by remember { mutableStateOf( BgItemsState( backgroundObjects = backgroundObjects ) ) }
     val bgGreeneryItemsState by remember { mutableStateOf( BgGreeneryItemsState ( greeneryObjects = greeneryObjects ) ) }
     val cloudState by remember { mutableStateOf( CloudState( cloudItems = cloudItems ) ) }
@@ -100,7 +99,7 @@ fun GameScreen(
         GlobalScope.launch {
             controller.inputUp.collect{
                 if(it) {
-                    currentScore?.let { it1 -> playerState.jump(it1) }
+                    currentScore?.let { it1 -> playerState.up(it1) }
                 }
             }
         }
@@ -182,14 +181,14 @@ fun GameScreen(
                     Text("Right")
                 }
                 OutlinedButton(onClick = {
-                    currentScore?.let { playerState.jump(it) }
+                    currentScore?.let { playerState.up(it) }
                 }) {
-                    Text("Jump")
+                    Text("Up")
                 }
                 OutlinedButton(onClick = {
                     currentScore?.let { playerState.crawl(it) }
                 }) {
-                    Text("Crawl")
+                    Text("Down")
                 }
                 Text("Dashes: ${gameVM.dashes.value}")
                 Text("Jumps: ${gameVM.jumps.value}")

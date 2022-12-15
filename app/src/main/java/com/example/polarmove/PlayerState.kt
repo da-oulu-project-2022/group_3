@@ -11,6 +11,11 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.graphics.drawable.toDrawable
+import com.example.polarmove.MainActivity.Companion.sound1
+import com.example.polarmove.MainActivity.Companion.sound2
+import com.example.polarmove.MainActivity.Companion.sound3
+import com.example.polarmove.MainActivity.Companion.sound4
+import com.example.polarmove.MainActivity.Companion.soundPool
 
 class PlayerState(
     var xPos: Int = 0,
@@ -72,17 +77,30 @@ class PlayerState(
         }
     }
 
+    fun up(score: Int){
+        if ( isCrawling ) {
+            crawl(score)
+        } else {
+            jump(score)
+        }
+    }
+
+
     fun moveLeft(score: Int) {
+        soundPool!!.play(sound1, 1f, 1f, 0, 0, 2f)
         xPos = if ( xPos == pos1 ) pos2 else pos3
         gameVM.dashIncrease(score)
     }
 
     fun moveRight(score: Int) {
+        soundPool!!.play(sound1, 1f, 1f, 0, 0, 2f)
         xPos = if ( xPos == pos3 ) pos2 else pos1
         gameVM.dashIncrease(score)
     }
 
     fun jump(score: Int) {
+        soundPool!!.play(sound2, 1f, 1f, 0, 0, .8f)
+        soundPool!!.play(sound3, 1f, 1f, 0, 0, .8f)
         isCrawling = false
         isJumping = true
         keyframe = 0
@@ -93,6 +111,7 @@ class PlayerState(
         isCrawling = !isCrawling
         keyframe = 0
         gameVM.squatIncrease(score)
+        soundPool!!.play(sound4, 1f, 1f, 0, 0, .8f)
     }
 
     fun getBounds(): Rect {

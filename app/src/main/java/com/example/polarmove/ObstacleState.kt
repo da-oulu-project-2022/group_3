@@ -7,8 +7,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 data class ObstacleState(
     val obstacleList: ArrayList<ObstacleModel> = ArrayList(),
     var roadObjects: ArrayList<ImageLoader.ImageWithName>,
-    val obstXposs: List<Int>,
-    val obstacleNames: ArrayList<String>
+    val obstXposs: List<Int>
 ) {
 
     init {

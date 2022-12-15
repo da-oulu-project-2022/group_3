@@ -19,6 +19,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.polar.sdk.api.PolarBleApi
 
+
+
 @Composable
 fun StartPoint( gameVM: GameVM, controller: PolarController ){
 
@@ -35,6 +37,9 @@ fun StartPoint( gameVM: GameVM, controller: PolarController ){
     val catJumpLoader = ImageLoader(context)
     val catCrawlLoader = ImageLoader(context)
     val obstacleLoader = ImageLoader(context)
+    val backgroundObjectsLoader = ImageLoader(context)
+    val greeneryLoader = ImageLoader(context)
+    val cloudsLoader = ImageLoader(context)
 
     //Fetching user data and set user if Firebase user is logged in
     if( user != null ){
@@ -45,67 +50,45 @@ fun StartPoint( gameVM: GameVM, controller: PolarController ){
         userVM.setUser( user )
     }
 
-
     var obstacleSize = 200
     var playerSize = 250
     var bgItemSize = 700
+    var bgItemSize2 = 900
+    var bgItemSize3 = 500
+    var bgItemSize4 = 400
+    var bgItemSize5 = 300
     var cloudSize = 700
+    var cloudSize2 = 500
     var plantsSize = 300
-    
-    if( deviceWidthInPixels > 1080){
+    var plantsSize3 = 200
+    var plantsSize2 = 500
+    var manholeSize = 480
+    var manholeSize2 = 280
+
+    if ( deviceWidthInPixels > 1080 ) {
         obstacleSize = 250
         playerSize = 300
         bgItemSize = 800
+        bgItemSize2 = 1000
+        bgItemSize3 = 600
+        bgItemSize4 = 500
+        bgItemSize5 = 400
         cloudSize = 800
+        cloudSize2 = 600
+        plantsSize3 = 300
         plantsSize = 400
+        plantsSize2 = 600
         lineStart = -0.14
         lineEnd = 2.41
-        obstacleSize = 250
-        playerSize = 300
-    }
+        manholeSize = 580
+        manholeSize2 = 380
+    
+
 
     //   Manhole
     val manhole: ImageBitmap
     val manhole2: ImageBitmap
     val manholeItem: ArrayList<ImageBitmap> = ArrayList()
-
-//    Background objects
-    val house: ImageBitmap
-    val house2: ImageBitmap
-    val house3: ImageBitmap
-    val house4: ImageBitmap
-    val house5: ImageBitmap
-    val house6: ImageBitmap
-    val bush: ImageBitmap
-    val bush2: ImageBitmap
-    val bush3: ImageBitmap
-    val tree: ImageBitmap
-    val tree2: ImageBitmap
-    val flower: ImageBitmap
-    val greenery: ImageBitmap
-    val streetlight: ImageBitmap
-    val trashcanbg: ImageBitmap
-    val backgroundObjects: ArrayList<ImageBitmap> = ArrayList()
-
-    val bushVer2: ImageBitmap
-    val bush2Ver2: ImageBitmap
-    val bush3Ver2: ImageBitmap
-    val treeVer2: ImageBitmap
-    val tree2Ver2: ImageBitmap
-    val flowerVer2: ImageBitmap
-    val greeneryVer2: ImageBitmap
-    val greeneryObjects: ArrayList<ImageBitmap> = ArrayList()
-
-//    Clouds
-    val cloud: ImageBitmap
-    val cloud2: ImageBitmap
-    val cloud3: ImageBitmap
-    val cloud4: ImageBitmap
-    val cloudItems: ArrayList<ImageBitmap> = ArrayList()
-
-///////////// Obstacle names /////////////////////////////////////////////////////////////////////////////////
-
-    val obstacleNames: ArrayList<String> = ArrayList()
 
 //////////// Walk Cycle //////////////////////////////////////////////////////////////////////////////////////
 
@@ -143,90 +126,42 @@ fun StartPoint( gameVM: GameVM, controller: PolarController ){
 
 //////////////    Background objects    ////////////////////////////////////////////////////////////////////////////////
 
-    val houseBitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.house1version1  )
-    val house2Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.house1version2 )
-    val house3Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.house1version3 )
-    val house4Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.house2version1 )
-    val house5Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.house2version2 )
-    val house6Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.house2version3 )
-    val bushBitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.bush )
-    val bush2Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.bush2  )
-    val bush3Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.bush3  )
-    val treeBitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.tree1 )
-    val tree2Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.tree2  )
-    val flowerBitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.flower  )
-    val greeneryBitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.greenery )
-    val streetlightBitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.streetlight )
-    val trashcanbgBitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.trashcan  )
+    backgroundObjectsLoader.addImage("house", bgItemSize, R.drawable.house1version1)
+    backgroundObjectsLoader.addImage( "house2", bgItemSize2, R.drawable.house1version2)
+    backgroundObjectsLoader.addImage("house3", bgItemSize2, R.drawable.house1version3)
+    backgroundObjectsLoader.addImage("house4", bgItemSize, R.drawable.house2version1)
+    backgroundObjectsLoader.addImage("house5", bgItemSize, R.drawable.house2version2)
+    backgroundObjectsLoader.addImage("house6", bgItemSize, R.drawable.house2version3)
+    backgroundObjectsLoader.addImage("bush", plantsSize, R.drawable.bush)
+    backgroundObjectsLoader.addImage("bush2", plantsSize2, R.drawable.bush2)
+    backgroundObjectsLoader.addImage("bush3", plantsSize, R.drawable.bush3)
+    backgroundObjectsLoader.addImage("tree1", bgItemSize4, R.drawable.tree1)
+    backgroundObjectsLoader.addImage("tree2", plantsSize2, R.drawable.tree2)
+    backgroundObjectsLoader.addImage("flower", plantsSize3, R.drawable.flower)
+    backgroundObjectsLoader.addImage("greenery", plantsSize3, R.drawable.greenery)
+    backgroundObjectsLoader.addImage("streetlight", bgItemSize, R.drawable.streetlight)
+    backgroundObjectsLoader.addImage("trashcan", bgItemSize5, R.drawable.trashcan)
 
-    //        Background objects
-    house = Bitmap.createScaledBitmap( houseBitmap, bgItemSize, bgItemSize, true ).asImageBitmap()
-    house2 = Bitmap.createScaledBitmap( house2Bitmap,bgItemSize+200, bgItemSize+200, true ).asImageBitmap()
-    house3 = Bitmap.createScaledBitmap( house3Bitmap,bgItemSize+200, bgItemSize+200, true ).asImageBitmap()
-    house4 = Bitmap.createScaledBitmap( house4Bitmap,bgItemSize, bgItemSize, true ).asImageBitmap()
-    house5 = Bitmap.createScaledBitmap( house5Bitmap,bgItemSize, bgItemSize, true ).asImageBitmap()
-    house6 = Bitmap.createScaledBitmap( house6Bitmap,bgItemSize, bgItemSize, true ).asImageBitmap()
-    bush = Bitmap.createScaledBitmap( bushBitmap, plantsSize, plantsSize, true ).asImageBitmap()
-    bush2 = Bitmap.createScaledBitmap( bush2Bitmap, plantsSize+200, plantsSize+200, true ).asImageBitmap()
-    bush3 = Bitmap.createScaledBitmap( bush3Bitmap, plantsSize, plantsSize, true ).asImageBitmap()
-    tree = Bitmap.createScaledBitmap( treeBitmap, bgItemSize-300, bgItemSize-300, true ).asImageBitmap()
-    tree2 = Bitmap.createScaledBitmap( tree2Bitmap, plantsSize+200, plantsSize+200, true ).asImageBitmap()
-    flower = Bitmap.createScaledBitmap( flowerBitmap, plantsSize-100, plantsSize-100, true ).asImageBitmap()
-    greenery = Bitmap.createScaledBitmap( greeneryBitmap, plantsSize-100, plantsSize-100, true ).asImageBitmap()
-    streetlight = Bitmap.createScaledBitmap( streetlightBitmap, bgItemSize, bgItemSize, true ).asImageBitmap()
-    trashcanbg = Bitmap.createScaledBitmap( trashcanbgBitmap, bgItemSize-400, bgItemSize-450, true ).asImageBitmap()
 
-    bushVer2 = Bitmap.createScaledBitmap( bushBitmap, plantsSize, plantsSize, true ).asImageBitmap()
-    bush2Ver2 = Bitmap.createScaledBitmap( bush2Bitmap, plantsSize, plantsSize, true ).asImageBitmap()
-    bush3Ver2 = Bitmap.createScaledBitmap( bush3Bitmap, plantsSize, plantsSize, true ).asImageBitmap()
-    treeVer2 = Bitmap.createScaledBitmap( treeBitmap, bgItemSize-200, bgItemSize-200, true ).asImageBitmap()
-    tree2Ver2 = Bitmap.createScaledBitmap( tree2Bitmap, plantsSize+200, plantsSize+200, true ).asImageBitmap()
-    flowerVer2 = Bitmap.createScaledBitmap( flowerBitmap, plantsSize-100, plantsSize-100, true ).asImageBitmap()
-    greeneryVer2 = Bitmap.createScaledBitmap( greeneryBitmap, plantsSize-200, plantsSize-200, true ).asImageBitmap()
+    /////// Greenery objects   ////////////////////////////////////////////////////////////////////////////
 
-    greeneryObjects.add( treeVer2 )
-    greeneryObjects.add( tree2Ver2 )
-    greeneryObjects.add( flowerVer2 )
-    greeneryObjects.add( greeneryVer2 )
-    greeneryObjects.add( bushVer2 )
-    greeneryObjects.add( bush2Ver2 )
-    greeneryObjects.add( bush3Ver2 )
+    greeneryLoader.addImage("bush", plantsSize, R.drawable.bush)
+    greeneryLoader.addImage("bush2", plantsSize, R.drawable.bush2)
+    greeneryLoader.addImage("bush3", plantsSize, R.drawable.bush3)
+    greeneryLoader.addImage("tree", bgItemSize3, R.drawable.tree1)
+    greeneryLoader.addImage("tree2", plantsSize2, R.drawable.tree2)
+    greeneryLoader.addImage("flower", plantsSize3, R.drawable.flower)
+    greeneryLoader.addImage("greenery", plantsSize2, R.drawable.greenery)
 
-    //      Add Background objects to backgroundObjects list
-    backgroundObjects.add( house )
-    backgroundObjects.add( house2 )
-    backgroundObjects.add( house3 )
-    backgroundObjects.add( house4 )
-    backgroundObjects.add( house5 )
-    backgroundObjects.add( house6 )
-    backgroundObjects.add( bush )
-    backgroundObjects.add( bush2 )
-    backgroundObjects.add( bush3 )
-    backgroundObjects.add( tree )
-    backgroundObjects.add( tree2 )
-    backgroundObjects.add( flower )
-    backgroundObjects.add( greenery )
-    backgroundObjects.add( streetlight )
-    backgroundObjects.add( trashcanbg )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /////////    Clouds    ////////////////////////////////////////////////////////////////////////////////////////
-    val cloudBitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.cloud  )
-    val cloud2Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.cloud2ver1  )
-    val cloud3Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.cloud2ver2)
-    val cloud4Bitmap = BitmapFactory.decodeResource( LocalContext.current.resources, R.drawable.cloud2ver3  )
 
-    cloud = Bitmap.createScaledBitmap( cloudBitmap, cloudSize, cloudSize-200, true ).asImageBitmap()
-    cloud2 = Bitmap.createScaledBitmap(cloud2Bitmap, cloudSize, cloudSize, true ).asImageBitmap()
-    cloud3 =  Bitmap.createScaledBitmap( cloud3Bitmap, cloudSize, cloudSize, true ).asImageBitmap()
-    cloud4 =  Bitmap.createScaledBitmap( cloud4Bitmap, cloudSize, cloudSize, true ).asImageBitmap()
-
-    //       Add Clouds objects to cloudItems list
-    cloudItems.add( cloud )
-    cloudItems.add( cloud2 )
-    cloudItems.add( cloud3 )
-    cloudItems.add( cloud4 )
+    cloudsLoader.addImage("cloud1", cloudSize, R.drawable.cloud)
+    cloudsLoader.addImage("cloud2", cloudSize2, R.drawable.cloud2ver1)
+    cloudsLoader.addImage("cloud3", cloudSize, R.drawable.cloud2ver2)
+    cloudsLoader.addImage("cloud4", cloudSize, R.drawable.cloud2ver3)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -261,7 +196,20 @@ fun StartPoint( gameVM: GameVM, controller: PolarController ){
                 MainScreen( navControl, userVM, auth, scState )
             }
             composable( route = "GameScreen"){
-                GameScreen( userVM, gameVM, GameState(gameVM = gameVM), catWalkLoader.imagesWithName, catJumpLoader.imagesWithName, catCrawlLoader.imagesWithName, obstacleLoader.imagesWithName, backgroundObjects, cloudItems, greeneryObjects, manholeItem, obstXposs, controller, obstacleNames )
+                GameScreen( userVM,
+                    gameVM,
+                    GameState(gameVM = gameVM),
+                    catWalkLoader.imagesWithName,
+                    catJumpLoader.imagesWithName,
+                    catCrawlLoader.imagesWithName,
+                    obstacleLoader.imagesWithName,
+                    backgroundObjectsLoader.imagesWithName,
+                    cloudsLoader.imagesWithName,
+                    greeneryLoader.imagesWithName,
+                    manholeItem,
+                    obstXposs,
+                    controller
+                )
             }
             composable( route = "UserInfo"){
                 UserInfo( navControl, userVM, scState )
@@ -283,4 +231,5 @@ fun StartPoint( gameVM: GameVM, controller: PolarController ){
         }
     }
 
+}
 }
