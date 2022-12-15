@@ -1,24 +1,12 @@
 package com.example.firscomposeapp
 
-import android.Manifest
-import android.app.Activity
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothManager
 import android.content.Context
-import android.content.Intent
-import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import com.polar.sdk.api.PolarBleApi
 import com.polar.sdk.api.PolarBleApiCallback
 import com.polar.sdk.api.PolarBleApiDefaultImpl
@@ -29,13 +17,13 @@ import com.polar.sdk.api.model.PolarSensorSetting
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.unit.sp
 import com.example.polarmove.GameVM
 import com.polar.sdk.api.model.PolarHrData
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.PI
 
 class PolarController {
 
@@ -51,9 +39,11 @@ class PolarController {
     private val accelSumArray = mutableStateOf(intArrayOf(0, 0, 0))
 
 
-    private var sensetivity = 350 //Accel in mG
+    private var sensetivity = 600 //Accel in mG
     private var baseline = 1000 //Accel in mG
     private var inputCooldownTime = 800 //time in ms
+
+    private val orientation = Orientation()
 
     //https://developer.android.com/kotlin/flow/stateflow-and-sharedflow
     //val inputChange: MutableStateFlow<Boolean> = MutableStateFlow<Boolean>(false)
@@ -134,15 +124,17 @@ class PolarController {
 
     public fun connectToDevice(id: String) {
         if (!connected) {
+            Log.d(TAG,"Connecting to $id")
             deviceId = id
 
-            connected = try {
+            try {
+                connected = true
                 api.connectToDevice(id)
-                true
+
             } catch (polarInvalidArgument: PolarInvalidArgument) {
                 val attempt = "connection Failed"
                 Log.e(TAG, "Failed to $attempt. Reason $polarInvalidArgument ")
-                false
+                connected = false
             }
         }
     }
@@ -227,6 +219,7 @@ class PolarController {
 
         CheckIfValidInput(currentSegmentVector3d)
 
+        Log.d(TAG_INPUT, "Before Copy $currentSegmentVector3d")
         _fullSegment.value = currentSegmentVector3d.toIntArray()
         _lastSegmentsList.add(Vector3D(currentSegmentVector3d))
 
@@ -243,26 +236,209 @@ class PolarController {
     }
 
     private fun CheckIfValidInput(input: Vector3D) {
-
         Log.d(TAG_DATA, "Before rotation " + printInput(input))
 
         Log.d(TAG_DATA, "Rotate by ${offsetRotation[0]} ${offsetRotation[1]} ${offsetRotation[2]}")
-        input.rotate(offsetRotation)
+        //input.rotate(offsetRotation)
+        orientation.alignVector(input)
+
         _lastSegmentsList.add(Vector3D(input))
+
         Log.d(TAG_DATA, "After rotation " + printInput(input))
 
         checkInputDirection(_inputRight, input.x, sensetivity)
         checkInputDirection(_inputLeft, -input.x, sensetivity)
         checkInputDirection(_inputUp, (input.z-baseline), (sensetivity))
         checkInputDirection(_inputDown, -(input.z-baseline), (sensetivity))
-
-        /*
-        _inputLeft.value = input.x < -sensetivity
-        _inputUp.value = input.z > sensetivity + baseline
-        _inputDown.value = input.x < -sensetivity + baseline
-        */
     }
 
+    private fun orientate(orientation: Orientation){
+        val TAG_ORIENTATION = "Controller_Orientation"
+        Log.d(TAG_ORIENTATION,"")
+        var up = "+z"
+        var right = "+x"
+
+    }
+
+    @Composable
+    fun showOrientationSettings(){
+        orientation.changeOrientationSetting()
+    }
+    private class Orientation{
+        enum class Direction{Up,Down,Left,Right,TowardsBody,AwayBody}
+        var metalButtonDirection = Direction.TowardsBody
+        var sensorDirection = Direction.Up
+
+        fun alignVector(vector3D: Vector3D){
+            val before = Vector3D(vector3D)
+            when(sensorDirection){
+                Direction.Up -> {
+                    when(metalButtonDirection){
+                        Direction.TowardsBody -> {
+                            return
+                        }
+                        Direction.Left -> {
+                            vector3D.rotate(0.0,0.0,-0.5* PI)
+                        }
+                        Direction.AwayBody -> {
+                            vector3D.rotate(0.0,0.0,-1* PI)
+                        }
+                        Direction.Right -> {
+                            vector3D.rotate(0.0,0.0,0.5* PI)
+                        }
+                    }
+                }
+                Direction.Down -> {
+                    when(metalButtonDirection){
+                        Direction.TowardsBody -> {
+                            vector3D.rotate(PI,0.0, PI)
+                        }
+                        Direction.Left -> {
+                            vector3D.rotate(PI,0.0,0.5* PI)
+                        }
+                        Direction.AwayBody -> {
+                            vector3D.rotate(PI,0.0,0.0)
+                        }
+                        Direction.Right -> {
+                            vector3D.rotate(PI,0.0,-0.5* PI)
+                        }
+                    }
+                }
+                Direction.Left -> {
+                    when(metalButtonDirection){
+                        Direction.TowardsBody -> {
+                            vector3D.rotate(0.0,-0.5*PI,0.0)
+                        }
+                        Direction.Up -> {
+                            vector3D.rotate(-0.5*PI,-0.0*PI,0.5*PI)
+                        }
+                        Direction.AwayBody -> {
+                            vector3D.rotate(0.0*PI,0.5*PI,1.0*PI)
+                        }
+                        Direction.Down -> {
+                            vector3D.rotate(0.5*PI,-0.0*PI,-0.5*PI)
+                        }
+                    }
+                }
+                Direction.Right -> {
+                    when(metalButtonDirection){
+                        Direction.TowardsBody -> {
+                            vector3D.rotate(0.0,-1.5*PI,0.0)
+                        }
+                        Direction.Up -> {
+                            vector3D.rotate(-0.5*PI,-0.0*PI,-0.5*PI)
+                        }
+                        Direction.AwayBody -> {
+                            vector3D.rotate(0.0*PI,1.5*PI,1.0*PI)
+                        }
+                        Direction.Down -> {
+                            vector3D.rotate(0.5*PI,-0.0*PI,0.5*PI)
+                        }
+                    }
+                }
+                Direction.TowardsBody -> {
+                    when(metalButtonDirection){
+                        Direction.Up -> {
+                            vector3D.rotate(-0.5*PI,0.0,1.0*PI)
+                        }
+                        Direction.Left -> {
+                            vector3D.rotate(0.0,0.5*PI,-0.5* PI)
+                        }
+                        Direction.Down -> {
+                            vector3D.rotate(0.5*PI,0.0,0.0*PI)
+                        }
+                        Direction.Right -> {
+                            vector3D.rotate(0.0,-0.5*PI,0.5* PI)
+                        }
+                    }
+                }
+                Direction.AwayBody -> {
+                    when(metalButtonDirection){
+                        Direction.Up -> {
+                            vector3D.rotate(-0.5*PI,0.0* PI,0.0*PI)
+                        }
+                        Direction.Left -> {
+                            vector3D.rotate(-0.5*PI,-0.5*PI,0.0* PI)
+                        }
+                        Direction.Down -> {
+                            vector3D.rotate(0.5*PI,0.0,1* PI)
+                        }
+                        Direction.Right -> {
+                            vector3D.rotate(0.5*PI,0.5*PI,-1.0* PI)
+                        }
+                    }
+                }
+            }
+
+        }
+
+        @Composable
+        fun changeOrientationSetting(){
+            var expandedMetal by remember { mutableStateOf(false) }
+            var expandedSensor by remember { mutableStateOf(false) }
+
+            Column {
+                //Box(modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.TopStart)) {
+                    Button(onClick = { expandedMetal = true }) {
+                        Text("MetalButton Direction: $metalButtonDirection")
+                    }
+                    DropdownMenu(
+                        expanded = expandedMetal,
+                        onDismissRequest = { expandedMetal = false }
+                    ) {
+                        DropdownMenuItem(onClick = { metalButtonDirection = Direction.Up }) {
+                            Text("Up")
+                        }
+                        DropdownMenuItem(onClick = { metalButtonDirection = Direction.Down }) {
+                            Text("Down")
+                        }
+                        DropdownMenuItem(onClick = { metalButtonDirection = Direction.Left }) {
+                            Text("Left")
+                        }
+                        DropdownMenuItem(onClick = { metalButtonDirection = Direction.Right }) {
+                            Text("Right")
+                        }
+                        DropdownMenuItem(onClick = { metalButtonDirection = Direction.TowardsBody }) {
+                            Text("Towards Body")
+                        }
+                        DropdownMenuItem(onClick = { metalButtonDirection = Direction.AwayBody }) {
+                            Text("Away Body")
+                        }
+                    }
+                //}
+                //Box(modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.TopStart)) {
+                    Button(onClick = { expandedSensor = true }) {
+                        Text("Sensor Direction $sensorDirection")
+                    }
+                    DropdownMenu(
+                        expanded = expandedSensor,
+                        onDismissRequest = { expandedSensor = false }
+                    ) {
+                        DropdownMenuItem(onClick = { sensorDirection = Direction.Up }) {
+                            Text("Up")
+                        }
+                        DropdownMenuItem(onClick = { sensorDirection = Direction.Down }) {
+                            Text("Down")
+                        }
+                        DropdownMenuItem(onClick = { sensorDirection = Direction.Left }) {
+                            Text("Left")
+                        }
+                        DropdownMenuItem(onClick = { sensorDirection = Direction.Right }) {
+                            Text("Right")
+                        }
+                        DropdownMenuItem(onClick = { sensorDirection = Direction.TowardsBody }) {
+                            Text("Towards Body")
+                        }
+                        DropdownMenuItem(onClick = { sensorDirection = Direction.AwayBody }) {
+                            Text("Away Body")
+                        }
+                    }
+                //}
+            }
+
+        }
+    }
+    // lights up -> up = swimmer right -> +z right = +x
     private fun checkInputDirection(direction: MutableStateFlow<Boolean>, input: Double, sens: Int)
     {
         val before = direction.value

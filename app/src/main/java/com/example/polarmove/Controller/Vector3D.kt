@@ -1,5 +1,6 @@
 package com.example.firscomposeapp
 
+import android.util.Log
 import io.reactivex.rxjava3.internal.operators.flowable.FlowableDelaySubscriptionOther
 import kotlin.math.acos
 import kotlin.math.asin
@@ -84,16 +85,29 @@ class Vector3D {
     }
 
     fun rotate(rotation:DoubleArray){
+        Log.d("Vector3D", "Before rotation " + toString())
+
+        Log.d("Vector3D", "Rotate by ${rotation[0]} ${rotation[1]} ${rotation[2]}")
         val rotMatrixX=Matrix3D(Matrix3D.Axis.X,rotation[0])
         val rotMatrixY=Matrix3D(Matrix3D.Axis.Y,rotation[1])
         val rotMatrixZ=Matrix3D(Matrix3D.Axis.Z,rotation[2])
 
         this*=rotMatrixX
+        Log.d("Vector3D", "After X rotation " + toString())
+
         this*=rotMatrixY
+        Log.d("Vector3D", "After Y rotation " + toString())
+
         this*=rotMatrixZ
+        Log.d("Vector3D", "After Z rotation " + toString())
+
+    }
+    fun rotate(x:Double,y:Double,z:Double) {
+
+        rotate(doubleArrayOf(x,y,z))
     }
 
-    fun dotProduct(other:Vector3D):Double {
+        fun dotProduct(other:Vector3D):Double {
         val result=(x*other.x) + (y*other.y) + (z*other.z)
         return result.toDouble()
     }
@@ -148,6 +162,10 @@ class Vector3D {
         x/=divider
         y/=divider
         z/=divider
+    }
+
+    override fun toString():String{
+        return "X: $x Y: $y Z: $z"
     }
 
 }
