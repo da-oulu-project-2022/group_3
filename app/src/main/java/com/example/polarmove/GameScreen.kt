@@ -67,6 +67,7 @@ fun GameScreen(
     obstacleNames: ArrayList<String>
 ){
 
+
     val TAG = "MY-TAG"
 
     var deviceId = "B5DED921"
