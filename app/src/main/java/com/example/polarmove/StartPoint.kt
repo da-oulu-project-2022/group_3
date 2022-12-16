@@ -159,7 +159,7 @@ fun StartPoint( gameVM: GameVM, controller: PolarController ){
 
 /////////    Clouds    ////////////////////////////////////////////////////////////////////////////////////////
 
-    cloudsLoader.addImage("cloud1", cloudSize, R.drawable.cloud)
+//    cloudsLoader.addImage("cloud1", cloudSize, R.drawable.cloud)
     cloudsLoader.addImage("cloud2", cloudSize2, R.drawable.cloud2ver1)
     cloudsLoader.addImage("cloud3", cloudSize, R.drawable.cloud2ver2)
     cloudsLoader.addImage("cloud4", cloudSize, R.drawable.cloud2ver3)

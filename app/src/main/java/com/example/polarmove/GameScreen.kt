@@ -1,20 +1,10 @@
 package com.example.polarmove
 
-import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.provider.Settings.Global
-import android.util.Log
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.OutlinedButton
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -24,28 +14,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.polar.sdk.api.PolarBleApi
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.core.graphics.drawable.toBitmap
-import androidx.core.graphics.drawable.toDrawable
 import com.example.firscomposeapp.PolarController
-import com.polar.sdk.api.PolarBleApiCallback
-import com.polar.sdk.api.model.PolarDeviceInfo
-import com.polar.sdk.api.model.PolarHrData
-import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.util.*
 import kotlin.collections.ArrayList
 
 
@@ -67,9 +43,9 @@ fun GameScreen(
 ){
 
 
-    val TAG = "MY-TAG"
+//    val TAG = "MY-TAG"
 
-    var deviceId = "B5DED921"
+    val deviceId = "B5DED921"
 
     val obstacleState by remember { mutableStateOf( ObstacleState( roadObjects = roadObjects, obstXposs = obstXposs ) ) }
     val bgItemsState by remember { mutableStateOf( BgItemsState( backgroundObjects = backgroundObjects ) ) }
@@ -116,7 +92,7 @@ fun GameScreen(
         gameState.increaseScore()
         obstacleState.moveDown()
         bgItemsState.moveDown()
-        manholeState.moveDown()
+//        manholeState.moveDown()
         bgGreeneryItemsState.moveDown()
         cloudState.moveRight()
         playerState.move()
@@ -170,27 +146,27 @@ fun GameScreen(
                     Text("Show acc")
                 }
 
-                controller.showOrientationSettings()
-//                OutlinedButton(onClick = {
-//                    currentScore?.let { playerState.moveLeft(it) }
-//                }) {
-//                    Text("Left")
-//                }
-//                OutlinedButton(onClick = {
-//                    currentScore?.let { playerState.moveRight(it) }
-//                }) {
-//                    Text("Right")
-//                }
-//                OutlinedButton(onClick = {
-//                    currentScore?.let { playerState.up(it) }
-//                }) {
-//                    Text("Up")
-//                }
-//                OutlinedButton(onClick = {
-//                    currentScore?.let { playerState.crawl(it) }
-//                }) {
-//                    Text("Down")
-//                }
+//                controller.showOrientationSettings()
+                OutlinedButton(onClick = {
+                    currentScore?.let { playerState.moveLeft(it) }
+                }) {
+                    Text("Left")
+                }
+                OutlinedButton(onClick = {
+                    currentScore?.let { playerState.moveRight(it) }
+                }) {
+                    Text("Right")
+                }
+                OutlinedButton(onClick = {
+                    currentScore?.let { playerState.up(it) }
+                }) {
+                    Text("Up")
+                }
+                OutlinedButton(onClick = {
+                    currentScore?.let { playerState.crawl(it) }
+                }) {
+                    Text("Down")
+                }
                 Text("Dashes: ${gameVM.dashes.value}")
                 Text("Jumps: ${gameVM.jumps.value}")
                 Text("Squats: ${gameVM.squats.value}")

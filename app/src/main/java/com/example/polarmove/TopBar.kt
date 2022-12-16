@@ -19,9 +19,9 @@ fun TopBar(){
             .fillMaxWidth()
             .padding(0.dp, 20.dp)
     ) {
-        Text(text = "P", style = MaterialTheme.typography.h1 )
-        Text(text = "O", color = PolarRed, style = MaterialTheme.typography.h1 )
-        Text(text = "LAR", style = MaterialTheme.typography.h1 )
-        Text(text = " MOVE", style = MaterialTheme.typography.h1 )
+        Text(text = "C", style = MaterialTheme.typography.h1 )
+        Text(text = "A", color = PolarRed, style = MaterialTheme.typography.h1 )
+        Text(text = "T", style = MaterialTheme.typography.h1 )
+        Text(text = " ADVENTURES", style = MaterialTheme.typography.h1 )
     }
 }

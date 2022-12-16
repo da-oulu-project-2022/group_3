@@ -26,6 +26,7 @@ data class ObstacleState(
             val obstacle = ObstacleModel(
                 xPos = obstXposs[count.random()],
                 yPos = startY,
+                zLevel = if ( roadObjects[random].name == "trashcan" || roadObjects[random].name == "trashcan2" ) 0 else 1,
                 image = roadObjects[random].image,
                 name = roadObjects[random].name
             )

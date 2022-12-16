@@ -52,10 +52,10 @@ class UserVM: ViewModel() {
                     username = fetchedData.get("username") as String,
                     email = userEmail.value,
                     weight = fetchedData.get("weight") as Number,
-                    height = fetchedData.get("height") as Number,
                     gender = fetchedData.get("gender") as String,
                     age = fetchedData.get("age") as Number,
-                    highscore = fetchedData.get("highscore") as Number
+                    highscore = fetchedData.get("highscore") as Number,
+                    maxHr = fetchedData.get( "maxHr" ) as Number
                 )
                 setUsername(tempUserData.username)
                 setHighscore(tempUserData.highscore.toString())

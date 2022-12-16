@@ -38,8 +38,8 @@ fun UserInfoContent( userVM: UserVM ){
     var age by remember { mutableStateOf(userData.age.toString()) }
     val ageRange = (1..100).toList()
 
-    var height by remember { mutableStateOf(userData.height.toString())}
-    val heightRange = (90..220).toList()
+    var maxHR by remember { mutableStateOf(userData.maxHr.toString()) }
+    val maxHRrange = ( 90..200).toList()
 
     var weight by remember { mutableStateOf(userData.weight.toString())}
     val weightRange = (30..150).toList()
@@ -51,7 +51,7 @@ fun UserInfoContent( userVM: UserVM ){
 
     //Drop down menu booleans
     var ageExpanded by remember { mutableStateOf(false)}
-    var heightExpanded by remember { mutableStateOf(false)}
+    var maxHrExpanded by remember { mutableStateOf(false)}
     var weightExpanded by remember { mutableStateOf(false)}
     var genderExpanded by remember { mutableStateOf(false)}
 
@@ -61,7 +61,7 @@ fun UserInfoContent( userVM: UserVM ){
     //Visibility of the save button if stats are changed
     saveButton = age.toInt() != userData.age.toInt() ||
             weight.toInt() != userData.weight.toInt() ||
-            height.toInt() != userData.height.toInt() ||
+            maxHR.toInt() != userData.maxHr.toInt() ||
             gender != userData.gender
 
     Column(
@@ -115,12 +115,12 @@ fun UserInfoContent( userVM: UserVM ){
                     Spacer(modifier = Modifier.height(10.dp))
                     Row {
                         Text(
-                            "H",
+                            "M",
                             color = PolarRed,
                             style = MaterialTheme.typography.h1,
                             fontSize = 12.sp
                         )
-                        Text("EIGHT", style = MaterialTheme.typography.h1, fontSize = 12.sp)
+                        Text("AX HR", style = MaterialTheme.typography.h1, fontSize = 12.sp)
                     }
                     Spacer(modifier = Modifier.height(10.dp))
                     Row {
@@ -152,7 +152,8 @@ fun UserInfoContent( userVM: UserVM ){
                 ){
                         Text( text = "${userData.weight} kg")
                         Spacer(modifier = Modifier.height(10.dp))
-                        Text(text = "${userData.height} cm")
+                        Text( text = "${userData.maxHr} bpm")
+//                        Text(text = "${userData.height} cm")
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(text = "${userData.age} y")
                     Spacer(modifier = Modifier.height(10.dp))
@@ -186,10 +187,10 @@ fun UserInfoContent( userVM: UserVM ){
                         userData.username,
                         userData.email,
                         weight.toInt(),
-                        height.toInt(),
                         gender,
                         age.toInt(),
-                        highscore.toInt()
+                        highscore.toInt(),
+                        maxHR.toInt()
                     )
                     userVM.changeStats( newUser )
                     userData = newUser
@@ -272,18 +273,17 @@ fun UserInfoContent( userVM: UserVM ){
                         }
                     }
 
-                    //Height input field and dropdown menu
                     Column{
                         OutlinedTextField(
-                            value = "$height cm",
-                            label = { Text( text = "Height")},
-                            onValueChange = { height = it },
+                            value = "$maxHR cm",
+                            label = { Text( text = "Max HR")},
+                            onValueChange = { maxHR = it },
                             singleLine = true,
                             enabled = false,
                             keyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Number ),
                             modifier = Modifier
                                 .fillMaxWidth(.47f)
-                                .clickable { heightExpanded = !heightExpanded },
+                                .clickable { maxHrExpanded = !maxHrExpanded },
                             shape = MaterialTheme.shapes.large,
                             trailingIcon = {
                                 Icon( painter = painterResource(R.drawable.dropdown_arrow), "description" )
@@ -296,17 +296,17 @@ fun UserInfoContent( userVM: UserVM ){
                             )
                         )
                         DropdownMenu(
-                            expanded = heightExpanded,
-                            onDismissRequest = { heightExpanded = false },
+                            expanded = maxHrExpanded,
+                            onDismissRequest = { maxHrExpanded = false },
                             modifier = Modifier
                                 .fillMaxWidth(.32f)
                                 .height(300.dp)
                         ) {
-                            heightRange.forEach { option ->
+                            maxHRrange.forEach { option ->
                                 DropdownMenuItem(
                                     onClick = {
-                                        height = option.toString()
-                                        heightExpanded = false
+                                        maxHR = option.toString()
+                                        maxHrExpanded = false
                                     }
                                 ) {
                                     Text(text = option.toString())

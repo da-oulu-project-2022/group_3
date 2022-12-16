@@ -35,9 +35,9 @@ class PlayerState(
 ) {
 
     val image: ImageBitmap
-        get() = if ( isJumping && keyframe <= 38 ) {
+        get() = if ( isJumping && keyframe <= 50 ) {
             jumpCycle[0].image
-        } else if ( isJumping && keyframe > 38 ){
+        } else if ( isJumping && keyframe > 50 ){
             jumpCycle[1].image
         } else if( isCrawling && keyframe <= 20) {
             crawlCycle[0].image
@@ -56,7 +56,7 @@ class PlayerState(
     fun playerInit(){
         xPos = pos2
         yPos = (deviceHeightInPixels - (deviceHeightInPixels * 0.15 + distanceBetweenLines * 3)).toInt()
-        zLevel = 0
+        zLevel = 2
         isJumping = false
         isCrawling = false
     }
@@ -67,8 +67,9 @@ class PlayerState(
 
     fun changeKeyframe() {
         keyframe++
-        if (isJumping && keyframe == 76) {
+        if (isJumping && keyframe == 100) {
             isJumping = false
+            zLevel = 2
             keyframe = 0
         } else if (!isJumping && !isCrawling && keyframe == 20) {
             keyframe = 0
@@ -101,6 +102,7 @@ class PlayerState(
     fun jump(score: Int) {
         soundPool!!.play(sound2, 1f, 1f, 0, 0, .8f)
         soundPool!!.play(sound3, 1f, 1f, 0, 0, .8f)
+        zLevel = -1
         isCrawling = false
         isJumping = true
         keyframe = 0
@@ -108,10 +110,11 @@ class PlayerState(
     }
 
     fun crawl(score: Int) {
+        soundPool!!.play(sound4, 1f, 1f, 0, 0, .8f)
         isCrawling = !isCrawling
+        zLevel = if ( isCrawling ) 0 else 2
         keyframe = 0
         gameVM.squatIncrease(score)
-        soundPool!!.play(sound4, 1f, 1f, 0, 0, .8f)
     }
 
     fun getBounds(): Rect {
