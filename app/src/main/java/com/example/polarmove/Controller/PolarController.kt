@@ -63,7 +63,7 @@ class PolarController {
     val rawData = _rawData.asStateFlow()
 
 
-    val connectionStateText = mutableStateOf("text")
+    val connectionStateText = mutableStateOf("not connected")
 
 
     companion object {

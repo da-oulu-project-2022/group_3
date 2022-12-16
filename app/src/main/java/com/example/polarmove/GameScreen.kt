@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -19,6 +20,7 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.input.TextFieldValue
 import com.example.firscomposeapp.PolarController
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -138,15 +140,22 @@ fun GameScreen(
                     .background(Color.Black)
                     .padding(10.dp, 0.dp)
             ){
-                OutlinedButton(onClick = { controller.connectToDevice(deviceId)} ) {
-                    Text(text = "Connect")
+                val textState = remember { mutableStateOf(TextFieldValue()) }
+                val connectionState by controller.connectionStateText
+                TextField(
+                    value = textState.value,
+                    onValueChange = { textState.value = it }
+                )
+                Text("connect to Polar device ID: " + textState.value.text)
+                OutlinedButton(onClick = { controller.connectToDevice(textState.value.text)} ) {
+                    Text(text = connectionState)
                 }
 
                 OutlinedButton(onClick = { controller.startStream() }) {
                     Text("Show acc")
                 }
 
-//                controller.showOrientationSettings()
+              controller.showOrientationSettings()
                 OutlinedButton(onClick = {
                     currentScore?.let { playerState.moveLeft(it) }
                 }) {
